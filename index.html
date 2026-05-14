@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Energy Advisor ⚡</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Noto+Sans+Telugu&family=Noto+Sans+Devanagari&family=Noto+Sans+Tamil&family=Noto+Sans+Kannada&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --card: #111827;
+    --card2: #1a2234;
+    --accent: #f59e0b;
+    --accent2: #10b981;
+    --danger: #ef4444;
+    --warn: #f97316;
+    --text: #f1f5f9;
+    --muted: #64748b;
+    --border: #1e293b;
+    --glow: 0 0 20px rgba(245,158,11,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── WARNING BANNER ─── */
+  #warnBanner {
+    display: none;
+    background: linear-gradient(90deg, #7c2d12, #dc2626, #7c2d12);
+    background-size: 200% 100%;
+    animation: bannerPulse 1.2s linear infinite;
+    color: #fff;
+    text-align: center;
+    padding: 10px 16px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  #warnBanner.show { display: block; }
+  @keyframes bannerPulse {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .logo { display: flex; align-items: center; gap: 8px; }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), #d97706);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: var(--glow);
+  }
+  .logo-text { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+  .logo-sub { font-size: 0.7rem; color: var(--muted); font-weight: 400; }
+
+  /* ─── LANG SELECTOR ─── */
+  .lang-bar {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .lang-btn {
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--card2);
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* ─── STATS BAR ─── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    padding: 10px 12px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-card {
+    background: var(--card2);
+    border-radius: 8px;
+    padding: 8px 6px;
+    text-align: center;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+  .stat-val {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-val.ok   { color: var(--accent2); }
+  .stat-val.warn { color: var(--warn); }
+  .stat-val.bad  { color: var(--danger); }
+  .stat-lbl {
+    font-size: 0.62rem;
+    color: var(--muted);
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ─── ENERGY ACCUMULATOR NOTE ─── */
+  .energy-note {
+    font-size: 0.6rem;
+    color: var(--accent2);
+    margin-top: 2px;
+  }
+
+  /* ─── EDIT READINGS ─── */
+  .edit-bar {
+    display: none;
+    padding: 10px 12px;
+    background: #0f172a;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .edit-bar.open { display: flex; }
+  .edit-field {
+    flex: 1; min-width: 100px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    font-family: 'Rajdhani', sans-serif;
+  }
+  .edit-save {
+    padding: 6px 16px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+  .edit-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    background: transparent;
+    border: 1px dashed var(--muted);
+    border-radius: 20px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    cursor: pointer;
+    font-family: inherit;
+    margin: 6px 12px;
+    width: fit-content;
+  }
+
+  /* ─── CHAT AREA ─── */
+  .chat-wrap {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .bubble {
+    max-width: 88%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    animation: fadeUp 0.3s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .bubble.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    border-bottom-right-radius: 4px;
+  }
+  .bubble.bot {
+    align-self: flex-start;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+  .bubble.bot .speak-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    color: var(--accent);
+    font-size: 0.72rem;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .bubble.bot .speak-btn.speaking {
+    background: var(--accent);
+    color: #000;
+  }
+
+  /* ─── QUICK CHIPS ─── */
+  .chips {
+    padding: 6px 12px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--border);
+    background: var(--card);
+  }
+  .chip {
+    padding: 5px 11px;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    color: var(--text);
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ─── INPUT ROW ─── */
+  .input-row {
+    display: flex;
+    gap: 6px;
+    padding: 10px 12px;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    align-items: flex-end;
+  }
+  .msg-input {
+    flex: 1;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    padding: 9px 12px;
+    font-size: 0.88rem;
+    font-family: 'Rajdhani', sans-serif;
+    resize: none;
+    max-height: 90px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .msg-input:focus { border-color: var(--accent); }
+  .msg-input::placeholder { color: var(--muted); }
+
+  .mic-btn, .send-btn {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .mic-btn {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .mic-btn.listening {
+    background: var(--danger);
+    border-color: var(--danger);
+    animation: micPulse 0.8s ease infinite;
+  }
+  @keyframes micPulse {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.12); }
+  }
+  .send-btn {
+    background: var(--accent);
+    color: #000;
+    font-weight: 700;
+  }
+  .send-btn:disabled {
+    background: var(--card2);
+    color: var(--muted);
+  }
+
+  /* ─── TYPING INDICATOR ─── */
+  .typing {
+    display: flex; gap: 5px; padding: 12px 14px;
+    align-self: flex-start;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 14px; border-bottom-left-radius: 4px;
+  }
+  .typing span {
+    width: 7px; height: 7px; background: var(--muted);
+    border-radius: 50%;
+    animation: typingDot 1.2s ease infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingDot {
+    0%,60%,100% { transform: translateY(0); opacity: 0.5; }
+    30%         { transform: translateY(-5px); opacity: 1; }
+  }
+
+  /* ─── SCROLLBAR ─── */
+  .chat-wrap::-webkit-scrollbar { width: 4px; }
+  .chat-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- WARNING BANNER -->
+<div id="warnBanner">
+  ⚠️ HIGH POWER ALERT — <span id="warnPower">--</span>W — REDUCE LOAD!
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <div>
+        <div class="logo-text">Energy Advisor</div>
+        <div class="logo-sub">AI-Powered • Real-time</div>
+      </div>
+    </div>
+  </div>
+  <div class="lang-bar" id="langBar">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('te')">తె</button>
+    <button class="lang-btn" onclick="setLang('hi')">हिं</button>
+    <button class="lang-btn" onclick="setLang('ta')">த</button>
+    <button class="lang-btn" onclick="setLang('kn')">ಕ</button>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-card">
+    <div class="stat-val" id="sVolt">--</div>
+    <div class="stat-lbl">Volts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" id="sCurr">--</div>
+    <div class="stat-lbl">Amps</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" id="sPow">--</div>
+    <div class="stat-lbl">Watts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val ok" id="sEnergy">0.00</div>
+    <div class="stat-lbl">kWh</div>
+    <div class="energy-note" id="energyNote">Resets in 30:00</div>
+  </div>
+</div>
+
+<!-- EDIT TOGGLE -->
+<button class="edit-toggle" onclick="toggleEdit()">✎ <span id="editLabel">Enter readings manually</span></button>
+
+<!-- EDIT BAR -->
+<div class="edit-bar" id="editBar">
+  <input class="edit-field" id="inVolt" type="number" placeholder="Voltage (V)" step="0.1">
+  <input class="edit-field" id="inCurr" type="number" placeholder="Current (A)" step="0.01">
+  <input class="edit-field" id="inPow"  type="number" placeholder="Power (W)"   step="0.1">
+  <input class="edit-field" id="inEn"   type="number" placeholder="Energy (kWh)" step="0.001">
+  <button class="edit-save" onclick="saveReadings()">Update</button>
+</div>
+
+<!-- CHAT -->
+<div class="chat-wrap" id="chat"></div>
+
+<!-- QUICK CHIPS -->
+<div class="chips" id="chips"></div>
+
+<!-- INPUT -->
+<div class="input-row">
+  <textarea class="msg-input" id="msgInput" rows="1"
+    placeholder="Ask about your energy..."
+    onkeydown="handleKey(event)"
+    oninput="autoResize(this)"></textarea>
+  <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Voice input">🎤</button>
+  <button class="send-btn" id="sendBtn" onclick="sendMsg()">➤</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let currentLang = 'en';
+let readings = { volt: null, curr: null, pow: null, energy: 0 };
+let accEnergy = 0;          // kWh accumulated — resets every 30 min
+let lastPowTs  = null;      // for accumulation calc
+const RESET_INTERVAL = 30 * 60 * 1000;  // 30 minutes in ms
+let resetAt = Date.now() + RESET_INTERVAL;
+let chatHistory = [];
+let speaking = false;
+let recognizing = false;
+let recognition = null;
+const POWER_LIMIT = 100;    // match your .ino
+const POWER_WARN  = POWER_LIMIT * 0.8;
+
+// ═══════════════════════════════════════════
+// LANGUAGE CONFIG
+// ═══════════════════════════════════════════
+const LANG = {
+  en: {
+    name: 'English',
+    ttsLang: 'en-IN',
+    placeholder: 'Ask about your energy...',
+    editLabel: 'Enter readings manually',
+    greeting: "Hi! I'm your Energy Advisor. I can see your current readings above. Ask me anything about saving power, your bill, or what your readings mean!",
+    chips: ['How to save energy?', 'Why is power high?', 'Estimate my bill', 'Is this normal?'],
+    systemPrompt: (r) => `You are a friendly energy advisor for a home in India. 
+Current readings: Voltage=${r.volt??'unknown'}V, Current=${r.curr??'unknown'}A, Power=${r.pow??'unknown'}W, Accumulated Energy=${r.energy.toFixed(3)}kWh.
+Power limit is ${POWER_LIMIT}W. Warning threshold is ${POWER_WARN}W.
+Give SHORT practical advice (3-4 sentences max). Use simple words. Focus on saving electricity and reducing bills.
+Reply in English.`
+  },
+  te: {
+    name: 'Telugu',
+    ttsLang: 'te-IN',
+    placeholder: 'విద్యుత్ గురించి అడగండి...',
+    editLabel: 'రీడింగ్‌లు నమోదు చేయండి',
+    greeting: "నమస్కారం! నేను మీ Energy Advisor. పైన మీ రీడింగ్‌లు చూడవచ్చు. విద్యుత్ ఆదా, బిల్లు గురించి ఏమైనా అడగండి!",
+    chips: ['విద్యుత్ ఆదా చేయడం ఎలా?', 'పవర్ ఎక్కువగా ఉంది ఎందుకు?', 'బిల్లు అంచనా', 'ఇది సాధారణమేనా?'],
+    systemPrompt: (r) => `You are a friendly energy advisor for a home in India.
+Current readings: Voltage=${r.volt??'unknown'}V, Current=${r.curr??'unknown'}A, Power=${r.pow??'unknown'}W, Accumulated Energy=${r.energy.toFixed(3)}kWh.
+Power limit is ${POWER_LIMIT}W.
+Give SHORT practical advice (3-4 sentences max). Use very simple Telugu words that illiterate/semi-literate users understand.
+Reply ONLY in Telugu (తెలుగు).`
+  },
+  hi: {
+    name: 'Hindi',
+    ttsLang: 'hi-IN',
+    placeholder: 'बिजली के बारे में पूछें...',
+    editLabel: 'रीडिंग दर्ज करें',
+    greeting: "नमस्ते! मैं आपका Energy Advisor हूँ। ऊपर आपकी रीडिंग देख सकते हैं। बिजली बचाने के बारे में कुछ भी पूछें!",
+    chips: ['बिजली कैसे बचाएं?', 'पावर ज्यादा क्यों है?', 'बिल का अनुमान', 'क्या यह सामान्य है?'],
+    systemPrompt: (r) => `You are a friendly energy advisor for a home in India.
+Current readings: Voltage=${r.volt??'unknown'}V, Current=${r.curr??'unknown'}A, Power=${r.pow??'unknown'}W, Accumulated Energy=${r.energy.toFixed(3)}kWh.
+Power limit is ${POWER_LIMIT}W.
+Give SHORT practical advice (3-4 sentences max). Use simple Hindi words that anyone can understand.
+Reply ONLY in Hindi (हिंदी).`
+  },
+  ta: {
+    name: 'Tamil',
+    ttsLang: 'ta-IN',
+    placeholder: 'மின்சாரம் பற்றி கேளுங்கள்...',
+    editLabel: 'அளவீடுகளை உள்ளிடுங்கள்',
+    greeting: "வணக்கம்! நான் உங்கள் Energy Advisor. மேலே உங்கள் அளவீடுகளை பார்க்கலாம். மின்சாரம் சேமிக்க எதுவும் கேளுங்கள்!",
+    chips: ['மின்சாரம் எப்படி சேமிப்பது?', 'சக்தி அதிகமாக ஏன்?', 'கட்டண மதிப்பீடு', 'இது சாதாரணமா?'],
+    systemPrompt: (r) => `You are a friendly energy advisor for a home in India.
+Current readings: Voltage=${r.volt??'unknown'}V, Current=${r.curr??'unknown'}A, Power=${r.pow??'unknown'}W, Accumulated Energy=${r.energy.toFixed(3)}kWh.
+Power limit is ${POWER_LIMIT}W.
+Give SHORT practical advice (3-4 sentences max). Use simple Tamil.
+Reply ONLY in Tamil (தமிழ்).`
+  },
+  kn: {
+    name: 'Kannada',
+    ttsLang: 'kn-IN',
+    placeholder: 'ವಿದ್ಯುತ್ ಬಗ್ಗೆ ಕೇಳಿ...',
+    editLabel: 'ರೀಡಿಂಗ್‌ಗಳನ್ನು ನಮೂದಿಸಿ',
+    greeting: "ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ Energy Advisor. ಮೇಲೆ ನಿಮ್ಮ ರೀಡಿಂಗ್‌ಗಳನ್ನು ನೋಡಬಹುದು. ವಿದ್ಯುತ್ ಉಳಿಸಲು ಏನಾದರೂ ಕೇಳಿ!",
+    chips: ['ವಿದ್ಯುತ್ ಹೇಗೆ ಉಳಿಸುವುದು?', 'ಪವರ್ ಹೆಚ್ಚಾಗಿರುವುದು ಏಕೆ?', 'ಬಿಲ್ ಅಂದಾಜು', 'ಇದು ಸಾಮಾನ್ಯವೇ?'],
+    systemPrompt: (r) => `You are a friendly energy advisor for a home in India.
+Current readings: Voltage=${r.volt??'unknown'}V, Current=${r.curr??'unknown'}A, Power=${r.pow??'unknown'}W, Accumulated Energy=${r.energy.toFixed(3)}kWh.
+Power limit is ${POWER_LIMIT}W.
+Give SHORT practical advice (3-4 sentences max). Use simple Kannada.
+Reply ONLY in Kannada (ಕನ್ನಡ).`
+  }
+};
+
+// ═══════════════════════════════════════════
+// ENERGY ACCUMULATION (never resets to 0)
+// ═══════════════════════════════════════════
+function tickEnergy() {
+  const now = Date.now();
+
+  // Auto-reset every 30 minutes
+  if (now >= resetAt) {
+    accEnergy = 0;
+    lastPowTs = null;
+    resetAt = now + RESET_INTERVAL;
+  }
+
+  const pow = readings.pow;
+  if (pow !== null && pow > 0) {
+    if (lastPowTs !== null) {
+      const hrs = (now - lastPowTs) / 3600000;
+      accEnergy += (pow / 1000) * hrs;
+    }
+    lastPowTs = now;
+  }
+  readings.energy = accEnergy;
+
+  // Update countdown label
+  const remaining = Math.max(0, resetAt - now);
+  const mm = String(Math.floor(remaining / 60000)).padStart(2, '0');
+  const ss = String(Math.floor((remaining % 60000) / 1000)).padStart(2, '0');
+  const noteEl = document.getElementById('energyNote');
+  if (noteEl) noteEl.textContent = `Resets in ${mm}:${ss}`;
+
+  updateStatsUI();
+  setTimeout(tickEnergy, 1000);  // tick every second for smooth countdown
+}
+
+// ═══════════════════════════════════════════
+// URL PARAM AUTO-LOAD (Blynk can pass values)
+// ═══════════════════════════════════════════
+function loadFromURL() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('v')) readings.volt   = parseFloat(p.get('v'));
+  if (p.get('i')) readings.curr   = parseFloat(p.get('i'));
+  if (p.get('w')) readings.pow    = parseFloat(p.get('w'));
+  if (p.get('e')) accEnergy       = parseFloat(p.get('e'));
+  readings.energy = accEnergy;
+  updateStatsUI();
+}
+
+// ═══════════════════════════════════════════
+// STATS UI + WARNING
+// ═══════════════════════════════════════════
+function updateStatsUI() {
+  const { volt, curr, pow, energy } = readings;
+  const vEl = document.getElementById('sVolt');
+  const cEl = document.getElementById('sCurr');
+  const pEl = document.getElementById('sPow');
+  const eEl = document.getElementById('sEnergy');
+
+  vEl.textContent = volt !== null ? volt.toFixed(1) : '--';
+  cEl.textContent = curr !== null ? curr.toFixed(2) : '--';
+  pEl.textContent = pow  !== null ? pow.toFixed(1)  : '--';
+  eEl.textContent = energy.toFixed(3);
+
+  // Color power
+  pEl.className = 'stat-val';
+  if (pow !== null) {
+    if (pow >= POWER_LIMIT) pEl.classList.add('bad');
+    else if (pow >= POWER_WARN) pEl.classList.add('warn');
+    else pEl.classList.add('ok');
+  }
+
+  // Warning banner
+  const banner = document.getElementById('warnBanner');
+  if (pow !== null && pow >= POWER_WARN) {
+    document.getElementById('warnPower').textContent = pow.toFixed(1);
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+// ═══════════════════════════════════════════
+// LANGUAGE
+// ═══════════════════════════════════════════
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['en','te','hi','ta','kn'][i] === lang);
+  });
+  document.getElementById('msgInput').placeholder = LANG[lang].placeholder;
+  document.getElementById('editLabel').textContent = LANG[lang].editLabel;
+  buildChips();
+  // Update recognition lang
+  if (recognition) recognition.lang = LANG[lang].ttsLang;
+}
+
+function buildChips() {
+  const chips = LANG[currentLang].chips;
+  document.getElementById('chips').innerHTML = chips.map(c =>
+    `<button class="chip" onclick="sendChip('${c.replace(/'/g,"\\'")}')">` + c + `</button>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════
+// EDIT READINGS
+// ═══════════════════════════════════════════
+function toggleEdit() {
+  document.getElementById('editBar').classList.toggle('open');
+}
+function saveReadings() {
+  const v = parseFloat(document.getElementById('inVolt').value);
+  const i = parseFloat(document.getElementById('inCurr').value);
+  const w = parseFloat(document.getElementById('inPow').value);
+  const e = parseFloat(document.getElementById('inEn').value);
+  if (!isNaN(v)) readings.volt = v;
+  if (!isNaN(i)) readings.curr = i;
+  if (!isNaN(w)) { readings.pow = w; lastPowTs = Date.now(); }
+  if (!isNaN(e)) accEnergy = e;
+  readings.energy = accEnergy;
+  updateStatsUI();
+  document.getElementById('editBar').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════
+// CHAT
+// ═══════════════════════════════════════════
+function addBubble(text, role) {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = `bubble ${role}`;
+  div.textContent = text;
+  if (role === 'bot') {
+    const btn = document.createElement('button');
+    btn.className = 'speak-btn';
+    btn.innerHTML = '▶ Speak';
+    btn.onclick = () => speakText(text, btn);
+    div.appendChild(btn);
+  }
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+function showTyping() {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = 'typing'; div.id = 'typing';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+function removeTyping() {
+  const el = document.getElementById('typing');
+  if (el) el.remove();
+}
+
+async function sendMsg() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  autoResize(input);
+  addBubble(text, 'user');
+  chatHistory.push({ role: 'user', content: text });
+  showTyping();
+
+  try {
+    const lang = LANG[currentLang];
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: lang.systemPrompt(readings),
+        messages: chatHistory
+      })
+    });
+    const data = await resp.json();
+    const reply = data.content?.[0]?.text || 'Sorry, could not get a response.';
+    removeTyping();
+    addBubble(reply, 'bot');
+    chatHistory.push({ role: 'assistant', content: reply });
+  } catch(e) {
+    removeTyping();
+    addBubble('⚠️ Connection error. Check internet.', 'bot');
+  }
+}
+
+function sendChip(text) {
+  document.getElementById('msgInput').value = text;
+  sendMsg();
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 90) + 'px';
+}
+
+// ═══════════════════════════════════════════
+// TEXT TO SPEECH
+// ═══════════════════════════════════════════
+function speakText(text, btn) {
+  if (!('speechSynthesis' in window)) { alert('TTS not supported in this browser.'); return; }
+  if (speaking) { speechSynthesis.cancel(); speaking = false; btn.classList.remove('speaking'); btn.innerHTML='▶ Speak'; return; }
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = LANG[currentLang].ttsLang;
+  utt.rate = 0.9;
+  utt.onstart = () => { speaking = true; btn.classList.add('speaking'); btn.innerHTML='■ Stop'; };
+  utt.onend   = () => { speaking = false; btn.classList.remove('speaking'); btn.innerHTML='▶ Speak'; };
+  speechSynthesis.speak(utt);
+}
+
+// ═══════════════════════════════════════════
+// VOICE INPUT (Speech Recognition)
+// ═══════════════════════════════════════════
+function toggleVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) { alert('Voice input not supported. Use Chrome.'); return; }
+
+  if (recognizing) {
+    recognition.stop();
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = LANG[currentLang].ttsLang;
+  recognition.interimResults = true;
+  recognition.continuous = false;
+
+  recognition.onstart = () => {
+    recognizing = true;
+    document.getElementById('micBtn').classList.add('listening');
+    document.getElementById('micBtn').textContent = '🔴';
+  };
+  recognition.onresult = (e) => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('msgInput').value = transcript;
+    autoResize(document.getElementById('msgInput'));
+    // Auto-send when final
+    if (e.results[e.results.length - 1].isFinal) {
+      recognition.stop();
+      setTimeout(() => sendMsg(), 300);
+    }
+  };
+  recognition.onerror = () => { recognizing = false; resetMic(); };
+  recognition.onend   = () => { recognizing = false; resetMic(); };
+  recognition.start();
+}
+function resetMic() {
+  document.getElementById('micBtn').classList.remove('listening');
+  document.getElementById('micBtn').textContent = '🎤';
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+window.onload = () => {
+  loadFromURL();
+  buildChips();
+  tickEnergy();
+  addBubble(LANG[currentLang].greeting, 'bot');
+};
+</script>
+</body>
+</html>
