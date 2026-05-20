@@ -553,50 +553,53 @@ function showTyping() {
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
 }
-
 async function sendMsg() {
   const input = document.getElementById('msgInput');
   const text = input.value.trim();
   if (!text) return;
 
-  const apiKey = getApiKey();
-  if (!apiKey) { alert("API Key parameter missing."); return; }
+  // Retrieve your saved key securely or ask for it
+  let apiKey = localStorage.getItem('gemini_api_key');
+  if (!apiKey || apiKey.startsWith('Alza') || apiKey.includes('YOUR_')) {
+    apiKey = prompt("Please enter your Google Gemini API Key:");
+    if (apiKey) localStorage.setItem('gemini_api_key', apiKey.trim());
+  }
+  if (!apiKey) return;
 
   const activeLang = currentLang;
   input.value = '';
   autoResize(input);
-  addBubble(text, 'user', activeLang);
+  addBubble(text, 'user');
   
+  // Format text securely for Gemini API parameters
   chatHistory.push({ role: 'user', parts: [{ text: text }] });
   showTyping();
 
   try {
-    // Standard secure proxy wrapper to bypass direct browser requests rejection rules
-    const corsProxy = "https://corsproxy.io/?";
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-    const response = await fetch(corsProxy + encodeURIComponent(endpoint), {
+    // Correct cross-origin routing URL bypasses CORS without requiring servers
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: chatHistory,
-        systemInstruction: { parts: [{ text: LANG[activeLang].prompt(readings) }] }
+        systemInstruction: { parts: [{ text: LANG[activeLang].systemPrompt(readings) }] }
       })
     });
 
     const data = await response.json();
-    document.getElementById('typing').remove();
+    removeTyping();
 
+    // Catch and extract text accurately out of Gemini response tokens
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response decoded.';
-    addBubble(reply, 'bot', activeLang);
+    addBubble(reply, 'bot');
     chatHistory.push({ role: 'model', parts: [{ text: reply }] });
   } catch(e) {
-    if(document.getElementById('typing')) document.getElementById('typing').remove();
-    chatHistory.pop();
-    addBubble('⚠️ Proxy connection failed. Check your API key or network limits.', 'bot');
+    removeTyping();
+    chatHistory.pop(); // Remove failed user message from history array
+    addBubble('⚠️ API Error. Please verify your internet connection or check your API key quotas.', 'bot');
   }
 }
-
 function sendChip(text) { document.getElementById('msgInput').value = text; sendMsg(); }
 function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } }
 function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 90) + 'px'; }
