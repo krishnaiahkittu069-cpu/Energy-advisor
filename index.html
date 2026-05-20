@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Energy Advisor ⚡</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Noto+Sans+Telugu&family=Noto+Sans+Devanagari&family=Noto+Sans+Tamil&family=Noto+Sans+Kannada&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --card: #111827;
+    --card2: #1a2234;
+    --accent: #f59e0b;
+    --accent2: #10b981;
+    --danger: #ef4444;
+    --warn: #f97316;
+    --text: #f1f5f9;
+    --muted: #64748b;
+    --border: #1e293b;
+    --glow: 0 0 20px rgba(245,158,11,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── OVERLOAD WARNING BANNER ─── */
+  #warnBanner {
+    display: none;
+    background: linear-gradient(90deg, #7c2d12, #dc2626, #7c2d12);
+    background-size: 200% 100%;
+    animation: bannerPulse 1.2s linear infinite;
+    color: #fff;
+    text-align: center;
+    padding: 10px 16px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  #warnBanner.show { display: block; }
+  @keyframes bannerPulse {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+
+  /* ─── HEADER SECTION ─── */
+  .header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .logo { display: flex; align-items: center; gap: 8px; }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), #d97706);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: var(--glow);
+  }
+  .logo-text { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+  .logo-sub { font-size: 0.7rem; color: var(--muted); font-weight: 400; }
+
+  /* ─── MULTI-LANGUAGE BAR ─── */
+  .lang-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+  .lang-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--card2);
+    color: var(--muted);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* ─── BLINK REAL-TIME MONITOR ─── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    padding: 10px 12px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-card {
+    background: var(--card2);
+    border-radius: 8px;
+    padding: 8px 6px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .stat-val {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-val.ok   { color: var(--accent2); }
+  .stat-val.warn { color: var(--warn); }
+  .stat-val.bad  { color: var(--danger); }
+  .stat-lbl {
+    font-size: 0.62rem;
+    color: var(--muted);
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .energy-note { font-size: 0.6rem; color: var(--accent2); margin-top: 2px; }
+
+  /* ─── PAID RESET INTERACTION PANEL ─── */
+  .bill-panel {
+    background: #0f172a;
+    border-bottom: 1px solid var(--border);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .bill-row { display: flex; justify-content: space-between; align-items: center; }
+  .bill-txt { font-size: 0.9rem; color: var(--text); }
+  .bill-amount { font-weight: 700; color: var(--accent); }
+  .pay-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--accent2);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+  }
+  .pay-btn:disabled { background: var(--card2); color: var(--muted); cursor: not-allowed; }
+
+  /* ─── MANUAL SIMULATION DRAWER ─── */
+  .edit-toggle {
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 12px; background: transparent;
+    border: 1px dashed var(--muted); border-radius: 20px;
+    color: var(--muted); font-size: 0.72rem; cursor: pointer;
+    font-family: inherit; margin: 8px auto 4px 12px; width: fit-content;
+  }
+  .edit-bar {
+    display: none; padding: 10px 12px; background: #0f172a;
+    border-bottom: 1px solid var(--border); gap: 8px; flex-wrap: wrap;
+  }
+  .edit-bar.open { display: flex; }
+  .edit-field {
+    flex: 1; min-width: 90px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); padding: 6px 10px; font-size: 0.85rem;
+  }
+  .edit-save {
+    padding: 6px 16px; background: var(--accent); color: #000;
+    border: none; border-radius: 6px; font-weight: 700; cursor: pointer;
+  }
+
+  /* ─── DISCUSSION CONSOLE ─── */
+  .chat-wrap {
+    flex: 1; overflow-y: auto; padding: 12px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .bubble {
+    max-width: 85%; padding: 10px 14px; border-radius: 14px;
+    font-size: 0.95rem; line-height: 1.5; animation: fadeUp 0.2s ease-out;
+  }
+  .bubble.te { font-family: 'Noto Sans Telugu', sans-serif; }
+  .bubble.hi { font-family: 'Noto Sans Devanagari', sans-serif; }
+  .bubble.ta { font-family: 'Noto Sans Tamil', sans-serif; }
+  .bubble.kn { font-family: 'Noto Sans Kannada', sans-serif; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .bubble.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    border-bottom-right-radius: 4px;
+  }
+  .bubble.bot {
+    align-self: flex-start;
+    background: var(--card2); border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+  .bubble.bot .speak-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 8px; padding: 4px 10px; background: transparent;
+    border: 1px solid var(--accent); border-radius: 20px;
+    color: var(--accent); font-size: 0.72rem; cursor: pointer;
+  }
+  .bubble.bot .speak-btn.speaking { background: var(--accent); color: #000; }
+
+  /* ─── SUGGESTION CHIPS ─── */
+  .chips {
+    padding: 6px 12px; display: flex; gap: 6px;
+    flex-wrap: wrap; border-top: 1px solid var(--border); background: var(--card);
+  }
+  .chip {
+    padding: 5px 11px; background: var(--card2); border: 1px solid var(--border);
+    border-radius: 20px; font-size: 0.8rem; cursor: pointer; color: var(--text);
+  }
+
+  /* ─── INPUT SYSTEM FOOTER ─── */
+  .input-row {
+    display: flex; gap: 6px; padding: 10px 12px;
+    background: var(--card); border-top: 1px solid var(--border); align-items: flex-end;
+  }
+  .msg-input {
+    flex: 1; background: var(--card2); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text); padding: 9px 12px;
+    font-size: 0.95rem; resize: none; max-height: 90px; outline: none;
+  }
+  .mic-btn, .send-btn {
+    width: 40px; height: 40px; border-radius: 10px; border: none;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .mic-btn { background: var(--card2); border: 1px solid var(--border); color: var(--text); }
+  .mic-btn.listening { background: var(--danger); border-color: var(--danger); animation: micPulse 0.8s ease infinite; }
+  @keyframes micPulse { 50% { transform: scale(1.1); } }
+  .send-btn { background: var(--accent); color: #000; }
+
+  .typing {
+    display: flex; gap: 5px; padding: 12px 14px; align-self: flex-start;
+    background: var(--card2); border: 1px solid var(--border); border-radius: 14px;
+  }
+  .typing span { width: 7px; height: 7px; background: var(--muted); border-radius: 50%; animation: typingDot 1.2s ease infinite; }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingDot { 0%,60%,100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-5px); opacity: 1; } }
+</style>
+</head>
+<body>
+
+<div id="warnBanner">
+  ⚠️ HIGH POWER ALERT — <span id="warnPower">--</span>W — EXCEEDED COMFORT METRIC LIMIT!
+</div>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <div>
+        <div class="logo-text">Energy Advisor</div>
+        <div class="logo-sub">Blynk Framework Ready Cluster</div>
+      </div>
+    </div>
+  </div>
+  <div class="lang-bar" id="langBar">
+    <button class="lang-btn active" onclick="setLang('en')">English</button>
+    <button class="lang-btn" onclick="setLang('te')">తెలుగు</button>
+    <button class="lang-btn" onclick="setLang('hi')">हिंदी</button>
+    <button class="lang-btn" onclick="setLang('ta')">தமிழ்</button>
+    <button class="lang-btn" onclick="setLang('kn')">ಕನ್ನಡ</button>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-card"><div class="stat-val" id="sVolt">--</div><div class="stat-lbl">Volts</div></div>
+  <div class="stat-card"><div class="stat-val" id="sCurr">--</div><div class="stat-lbl">Amps</div></div>
+  <div class="stat-card"><div class="stat-val" id="sPow">--</div><div class="stat-lbl">Watts</div></div>
+  <div class="stat-card">
+    <div class="stat-val ok" id="sEnergy">0.000</div>
+    <div class="stat-lbl">kWh</div>
+    <div class="energy-note" id="energyNote">Cycle Connected</div>
+  </div>
+</div>
+
+<div class="bill-panel">
+  <div class="bill-row">
+    <div class="bill-txt" id="billStatusText">Current Calculated Bill:</div>
+    <div class="bill-amount" id="billAmount">₹0.00</div>
+  </div>
+  <button class="pay-btn" id="payBtn" onclick="processPayment()">Confirm & Clear Bill Balance</button>
+</div>
+
+<button class="edit-toggle" onclick="toggleEdit()">✎ <span id="editLabel">Enter readings manually</span></button>
+<div class="edit-bar" id="editBar">
+  <input class="edit-field" id="inVolt" type="number" placeholder="Voltage (V)">
+  <input class="edit-field" id="inCurr" type="number" placeholder="Current (A)">
+  <input class="edit-field" id="inPow"  type="number" placeholder="Power (W)">
+  <button class="edit-save" onclick="saveReadings()">Update Node</button>
+</div>
+
+<div class="chat-wrap" id="chat"></div>
+<div class="chips" id="chips"></div>
+
+<div class="input-row">
+  <textarea class="msg-input" id="msgInput" rows="1" placeholder="Ask about your energy..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+  <button class="mic-btn" id="micBtn" onclick="toggleVoice()">🎤</button>
+  <button class="send-btn" id="sendBtn" onclick="sendMsg()">➤</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// INSTANCE CONFIGURATION STATE
+// ═══════════════════════════════════════════
+let currentLang = 'en';
+let readings = { volt: 230, curr: 0.0, pow: 0.0, energy: 0.000 };
+let chatHistory = [];
+let speaking = false;
+let recognizing = false;
+let recognition = null;
+
+// Reset Protocol Variables
+let isResetWindowActive = false;
+let timeRemaining = 0; 
+let countdownTimer = null;
+let lastAccumulatedTime = Date.now();
+
+const POWER_LIMIT = 100;    // High Power Warning Alert Threshold
+const PER_KWH_RATE = 7.00;  // Indian Average Domestic Tariff Rate Scale
+
+const LANG = {
+  en: {
+    placeholder: 'Ask about your energy...', editLabel: 'Enter readings manually',
+    greeting: "Hello! I am your AI Energy Advisor. I monitor your live appliance metrics. How can I assist you today?",
+    chips: ['Tips to save power', 'Is my bill running high?', 'Explain my metrics'],
+    statusActive: "Payment verified. Hold reset window lock: ", statusIdle: "System fully paid. Cycle clear.",
+    prompt: (r) => `You are a helpful energy advisor for an Indian household. Current metrics: Voltage=${r.volt}V, Current=${r.curr}A, Power=${r.pow}W, Energy=${r.energy.toFixed(3)}kWh. Give very short, conversational responses (Max 3 sentences). Language: English.`
+  },
+  te: {
+    placeholder: 'విద్యుత్ గురించి అడగండి...', editLabel: 'రీడింగ్‌లు నమోదు చేయండి',
+    greeting: "నమస్కారం! నేను మీ విద్యುత్ సలహాదారుని. విద్యುత్ పొదుపు, బిల్లు నిర్వహణపై నన్ను ఏదైనా అಡಗಂಡಿ.",
+    chips: ['కరెంట్ ఆదా చేయడం ఎలా?', 'నా బిల్లు ఎక్కువ వస్తोందా?', 'రీడింగుల అర్థం ఏమిటి?'],
+    statusActive: "రీసెట్ లాక్ సమయం: ", statusIdle: "బిల్లు చెల్లించబడింది. సిస్టమ్ క్లియర్.",
+    prompt: (r) => `You are a helpful energy advisor for an Indian household. Current metrics: Voltage=${r.volt}V, Current=${r.curr}A, Power=${r.pow}W, Energy=${r.energy.toFixed(3)}kWh. Short responses in simple Telugu language (తెలుగు) only.`
+  },
+  hi: {
+    placeholder: 'बिजली के बारे में पूछें...', editLabel: 'रीडिंग दर्ज करें',
+    greeting: "नमस्ते! मैं आपका ऊर्जा सलाहकार हूँ। आप मुझसे बिजली की बचत या अपने मीटर के बारे में कुछ भी पूछ सकते हैं।",
+    chips: ['बिजली बचाने के उपाय बताएं', 'क्या मेरा बिल अधिक है?', 'इस रीडिंग का क्या अर्थ है?'],
+    statusActive: "रीसेट लॉक समय: ", statusIdle: "बिल का भुगतान हो चुका है। चक्र साफ है।",
+    prompt: (r) => `You are a helpful energy advisor for an Indian household. Current metrics: Voltage=${r.volt}V, Current=${r.curr}A, Power=${r.pow}W, Energy=${r.energy.toFixed(3)}kWh. Short responses in simple Hindi language (हिंदी) only.`
+  },
+  ta: {
+    placeholder: 'மின்சாரம் பற்றி கேளுங்கள்...', editLabel: 'அளவீடுகளை உள்ளிடுங்கள்',
+    greeting: "வணக்கம்! நான் உங்கள் ஆற்றல் ஆலோசகர். மின்சாரத்தை எவ்வாறு சேமிப்பது அல்லது உங்கள் கட்டண விவரங்கள் பற்றி கேட்கலாம்.",
+    chips: ['மின்சாரம் சேமிப்பது எப்படி?', 'என் மின் கட்டணம் அதிகமா?', 'இந்த அளவீட்டின் அர்த்தம் என்ன?'],
+    statusActive: "மீட்டமைக்கப்படும் நேரம்: ", statusIdle: "கட்டணம் செலுத்தப்பட்டது. சுழற்சி சீரானது.",
+    prompt: (r) => `You are a helpful energy advisor for an Indian household. Current metrics: Voltage=${r.volt}V, Current=${r.curr}A, Power=${r.pow}W, Energy=${r.energy.toFixed(3)}kWh. Short responses in simple Tamil language (தமிழ்) only.`
+  },
+  kn: {
+    placeholder: 'ವಿದ್ಯುತ್ ಬಗ್ಗೆ ಕೇಳಿ...', editLabel: 'ರೀಡಿಂಗ್‌ಗಳನ್ನು ನಮೂದಿಸಿ',
+    greeting: "ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ ವಿದ್ಯುತ್ ಸಲಹೆಗಾರ. ವಿದ್ಯುತ್ ಉಳಿತಾಯ ಅಥವಾ ಬಿಲ್ ಬಗ್ಗೆ ನನ್ನನ್ನು ಪ್ರಶ್ನಿಸಬಹುದು.",
+    chips: ['ವید್ಯುತ್ ಉಳಿಸುವುದು ಹೇಗೆ?', 'ನನ್ನ ಬಿಲ್ ಹೆಚ್ಚಾಗಿದೆಯೇ?', 'ಈ ರೀಡಿಂಗ್ ಅರ್ಥವೇನು?'],
+    statusActive: "ಮರುಹೊಂದಿಸುವ ಸಮಯ: ", statusIdle: "ಬಿಲ್ ಪಾವತಿಸಲಾಗಿದೆ. ಸಿಸ್ಟಮ್ ಮುಕ್ತವಾಗಿದೆ.",
+    prompt: (r) => `You are a helpful energy advisor for an Indian household. Current metrics: Voltage=${r.volt}V, Current=${r.curr}A, Power=${r.pow}W, Energy=${r.energy.toFixed(3)}kWh. Short responses in simple Kannada language (ಕನ್ನಡ) only.`
+  }
+};
+
+// ═══════════════════════════════════════════
+// ENERGY INTEGRATION AND RECURSIVE TICK METRICS
+// ═══════════════════════════════════════════
+function manageEnergyEngine() {
+  const currentTime = Date.now();
+  
+  if (!isResetWindowActive) {
+    if (readings.pow && readings.pow > 0) {
+      const durationHours = (currentTime - lastAccumulatedTime) / 3600000;
+      readings.energy += (readings.pow / 1000) * durationHours;
+    }
+  }
+  lastAccumulatedTime = currentTime;
+
+  updateDashboardUI();
+  setTimeout(manageEnergyEngine, 1000);
+}
+
+// LOAD LIVE QUERY METRICS FROM BLYNK URL ARGS IF AVAILABLE
+function loadFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('v')) readings.volt = parseFloat(params.get('v'));
+  if (params.get('i')) readings.curr = parseFloat(params.get('i'));
+  if (params.get('w')) readings.pow = parseFloat(params.get('w'));
+}
+
+function updateDashboardUI() {
+  document.getElementById('sVolt').textContent = readings.volt ? readings.volt.toFixed(1) : '--';
+  document.getElementById('sCurr').textContent = readings.curr ? readings.curr.toFixed(2) : '--';
+  
+  const pEl = document.getElementById('sPow');
+  pEl.textContent = readings.pow ? readings.pow.toFixed(1) : '--';
+  pEl.className = 'stat-val';
+  if (readings.pow >= POWER_LIMIT) pEl.classList.add('bad');
+  else if (readings.pow >= POWER_LIMIT * 0.8) pEl.classList.add('warn');
+  else pEl.classList.add('ok');
+
+  document.getElementById('sEnergy').textContent = readings.energy.toFixed(3);
+
+  const calculatedBill = readings.energy * PER_KWH_RATE;
+  if (!isResetWindowActive) {
+    document.getElementById('billAmount').textContent = `₹${calculatedBill.toFixed(2)}`;
+  }
+
+  // Banner Check
+  const banner = document.getElementById('warnBanner');
+  if (readings.pow >= POWER_LIMIT) {
+    document.getElementById('warnPower').textContent = readings.pow.toFixed(1);
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+// ═══════════════════════════════════════════
+// 30 MINUTE CONFIRMATION RESET TIMEOUT PROTOCOL
+// ═══════════════════════════════════════════
+function processPayment() {
+  const currentBillAmount = readings.energy * PER_KWH_RATE;
+  if (currentBillAmount <= 0 && !isResetWindowActive) {
+    alert("No current bill balance generated to reset.");
+    return;
+  }
+
+  if (confirm(`Confirm you paid the bill amount of ₹${currentBillAmount.toFixed(2)} to reset energy accumulator?`)) {
+    isResetWindowActive = true;
+    readings.energy = 0.000; // Reset metrics instantly upon confirmation
+    timeRemaining = 30 * 60; // 30 minutes in seconds
+
+    document.getElementById('payBtn').disabled = true;
+    
+    if (countdownTimer) clearInterval(countdownTimer);
+    countdownTimer = setInterval(handleResetCountdownTick, 1000);
+    handleResetCountdownTick();
+  }
+}
+
+function handleResetCountdownTick() {
+  const lbl = LANG[currentLang];
+  const noteEl = document.getElementById('energyNote');
+  const txtEl = document.getElementById('billStatusText');
+  const bEl = document.getElementById('billAmount');
+
+  if (timeRemaining <= 0) {
+    clearInterval(countdownTimer);
+    isResetWindowActive = false;
+    document.getElementById('payBtn').disabled = false;
+    noteEl.textContent = "Cycle Synced";
+    txtEl.textContent = "Current Calculated Bill:";
+    return;
+  }
+
+  timeRemaining--;
+  const mm = String(Math.floor(timeRemaining / 60)).padStart(2, '0');
+  const ss = String(timeRemaining % 60).padStart(2, '0');
+
+  noteEl.textContent = `Reset Lockout: ${mm}:${ss}`;
+  txtEl.textContent = lbl.statusIdle;
+  bEl.textContent = "₹0.00"; 
+}
+
+// ═══════════════════════════════════════════
+// LOCALIZATION CONTROL METHODS
+// ═══════════════════════════════════════════
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach((b, i) => {
+    b.classList.toggle('active', ['en','te','hi','ta','kn'][i] === lang);
+  });
+  
+  document.getElementById('msgInput').placeholder = LANG[lang].placeholder;
+  document.getElementById('editLabel').textContent = LANG[lang].editLabel;
+  
+  if (isResetWindowActive) {
+    document.getElementById('billStatusText').textContent = LANG[lang].statusIdle;
+  }
+  buildChips();
+}
+
+function buildChips() {
+  const chips = LANG[currentLang].chips;
+  document.getElementById('chips').innerHTML = chips.map(c =>
+    `<button class="chip" onclick="sendChip('${c.replace(/'/g,"\\'")}')">${c}</button>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════
+// MANUAL DATA OVERRIDE PANEL
+// ═══════════════════════════════════════════
+function toggleEdit() { document.getElementById('editBar').classList.toggle('open'); }
+function saveReadings() {
+  const v = parseFloat(document.getElementById('inVolt').value);
+  const i = parseFloat(document.getElementById('inCurr').value);
+  const w = parseFloat(document.getElementById('inPow').value);
+  if (!isNaN(v)) readings.volt = v;
+  if (!isNaN(i)) readings.curr = i;
+  if (!isNaN(w)) readings.pow = w;
+  updateDashboardUI();
+  toggleEdit();
+}
+
+// ═══════════════════════════════════════════
+// AI CORE API INTERACTION (CORS SAFE BYPASS PROXIED)
+// ═══════════════════════════════════════════
+function getApiKey() {
+  let key = localStorage.getItem('gemini_api_key');
+  if (!key) {
+    key = prompt("Please input your secure Google Gemini API Key:");
+    if (key) localStorage.setItem('gemini_api_key', key.trim());
+  }
+  return key;
+}
+
+function addBubble(text, role, langClass = 'en') {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = `bubble ${role} ${langClass}`;
+  div.textContent = text;
+  
+  if (role === 'bot') {
+    const btn = document.createElement('button');
+    btn.className = 'speak-btn';
+    btn.innerHTML = '▶ Speak';
+    btn.onclick = () => speakText(text, btn);
+    div.appendChild(btn);
+  }
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function showTyping() {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = 'typing'; div.id = 'typing';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+async function sendMsg() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const apiKey = getApiKey();
+  if (!apiKey) { alert("API Key parameter missing."); return; }
+
+  const activeLang = currentLang;
+  input.value = '';
+  autoResize(input);
+  addBubble(text, 'user', activeLang);
+  
+  chatHistory.push({ role: 'user', parts: [{ text: text }] });
+  showTyping();
+
+  try {
+    // Standard secure proxy wrapper to bypass direct browser requests rejection rules
+    const corsProxy = "https://corsproxy.io/?";
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    const response = await fetch(corsProxy + encodeURIComponent(endpoint), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: chatHistory,
+        systemInstruction: { parts: [{ text: LANG[activeLang].prompt(readings) }] }
+      })
+    });
+
+    const data = await response.json();
+    document.getElementById('typing').remove();
+
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response decoded.';
+    addBubble(reply, 'bot', activeLang);
+    chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+  } catch(e) {
+    if(document.getElementById('typing')) document.getElementById('typing').remove();
+    chatHistory.pop();
+    addBubble('⚠️ Proxy connection failed. Check your API key or network limits.', 'bot');
+  }
+}
+
+function sendChip(text) { document.getElementById('msgInput').value = text; sendMsg(); }
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } }
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 90) + 'px'; }
+
+// ═══════════════════════════════════════════
+// ACCESSIBILITY VOICE IN/OUT CHANNELS
+// ═══════════════════════════════════════════
+function speakText(text, btn) {
+  if (!('speechSynthesis' in window)) { alert('TTS not supported.'); return; }
+  if (speaking) { window.speechSynthesis.cancel(); speaking = false; btn.innerHTML='▶ Speak'; return; }
+  
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = currentLang === 'en' ? 'en-IN' : currentLang + '-IN';
+  utterance.onstart = () => { speaking = true; btn.innerHTML='■ Stop'; };
+  utterance.onend   = () => { speaking = false; btn.innerHTML='▶ Speak'; };
+  window.speechSynthesis.speak(utterance);
+}
+
+function toggleVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) { alert('Speech recognition engine unavailable in this client browser.'); return; }
+  if (recognizing) { recognition.stop(); return; }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = currentLang === 'en' ? 'en-IN' : currentLang + '-IN';
+  recognition.interimResults = true;
+
+  recognition.onstart = () => {
+    recognizing = true;
+    document.getElementById('micBtn').classList.add('listening');
+    document.getElementById('micBtn').textContent = '🔴';
+  };
+  recognition.onresult = (e) => {
+    const transcript = Array.from(e.results).map(res => res[0].transcript).join('');
+    document.getElementById('msgInput').value = transcript;
+    if (e.results[e.results.length - 1].isFinal) {
+      recognition.stop();
+      setTimeout(() => sendMsg(), 300);
+    }
+  };
+  recognition.onerror = () => { recognizing = false; endMicUI(); };
+  recognition.onend   = () => { recognizing = false; endMicUI(); };
+  recognition.start();
+}
+function endMicUI() {
+  document.getElementById('micBtn').classList.remove('listening');
+  document.getElementById('micBtn').textContent = '🎤';
+}
+
+window.onload = () => {
+  loadFromURL();
+  buildChips();
+  manageEnergyEngine();
+  addBubble(LANG['en'].greeting, 'bot', 'en');
+};
+</script>
+</body>
+</html>
