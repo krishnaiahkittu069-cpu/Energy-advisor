@@ -82,16 +82,21 @@
     display: flex; gap: 6px; flex-wrap: wrap;
   }
   .lang-btn {
-    padding: 4px 10px;
+    padding: 4px 12px;
     border: 1px solid var(--border);
     border-radius: 20px;
     background: var(--card2);
     color: var(--muted);
-    font-size: 0.75rem;
-    font-family: inherit;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s;
   }
+  /* Fallback regional fonts for rendering buttons natively */
+  .lang-btn:nth-child(2) { font-family: 'Noto Sans Telugu', sans-serif; }
+  .lang-btn:nth-child(3) { font-family: 'Noto Sans Devanagari', sans-serif; }
+  .lang-btn:nth-child(4) { font-family: 'Noto Sans Tamil', sans-serif; }
+  .lang-btn:nth-child(5) { font-family: 'Noto Sans Kannada', sans-serif; }
+
   .lang-btn.active {
     background: var(--accent);
     color: #000;
@@ -201,10 +206,15 @@
     max-width: 88%;
     padding: 10px 14px;
     border-radius: 14px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     line-height: 1.5;
     animation: fadeUp 0.3s ease;
   }
+  .bubble.te { font-family: 'Noto Sans Telugu', sans-serif; }
+  .bubble.hi { font-family: 'Noto Sans Devanagari', sans-serif; }
+  .bubble.ta { font-family: 'Noto Sans Tamil', sans-serif; }
+  .bubble.kn { font-family: 'Noto Sans Kannada', sans-serif; }
+
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -232,7 +242,7 @@
     color: var(--accent);
     font-size: 0.72rem;
     cursor: pointer;
-    font-family: inherit;
+    font-family: 'Rajdhani', sans-serif;
   }
   .bubble.bot .speak-btn.speaking {
     background: var(--accent);
@@ -253,12 +263,15 @@
     background: var(--card2);
     border: 1px solid var(--border);
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.2s;
-    font-family: inherit;
     color: var(--text);
   }
+  .chip.te { font-family: 'Noto Sans Telugu', sans-serif; }
+  .chip.hi { font-family: 'Noto Sans Devanagari', sans-serif; }
+  .chip.ta { font-family: 'Noto Sans Tamil', sans-serif; }
+  .chip.kn { font-family: 'Noto Sans Kannada', sans-serif; }
   .chip:hover { border-color: var(--accent); color: var(--accent); }
 
   /* ─── INPUT ROW ─── */
@@ -277,15 +290,19 @@
     border-radius: 10px;
     color: var(--text);
     padding: 9px 12px;
-    font-size: 0.88rem;
-    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
     resize: none;
     max-height: 90px;
     outline: none;
     transition: border-color 0.2s;
   }
+  .msg-input.te { font-family: 'Noto Sans Telugu', sans-serif; }
+  .msg-input.hi { font-family: 'Noto Sans Devanagari', sans-serif; }
+  .msg-input.ta { font-family: 'Noto Sans Tamil', sans-serif; }
+  .msg-input.kn { font-family: 'Noto Sans Kannada', sans-serif; }
+  
   .msg-input:focus { border-color: var(--accent); }
-  .msg-input::placeholder { color: var(--muted); }
+  .msg-input::placeholder { color: var(--muted); font-family: 'Rajdhani', sans-serif; }
 
   .mic-btn, .send-btn {
     width: 40px; height: 40px;
@@ -348,12 +365,10 @@
 </head>
 <body>
 
-<!-- WARNING BANNER -->
 <div id="warnBanner">
   ⚠️ HIGH POWER ALERT — <span id="warnPower">--</span>W — REDUCE LOAD!
 </div>
 
-<!-- HEADER -->
 <div class="header">
   <div class="header-top">
     <div class="logo">
@@ -366,14 +381,13 @@
   </div>
   <div class="lang-bar" id="langBar">
     <button class="lang-btn active" onclick="setLang('en')">EN</button>
-    <button class="lang-btn" onclick="setLang('te')">తె</button>
-    <button class="lang-btn" onclick="setLang('hi')">हिं</button>
-    <button class="lang-btn" onclick="setLang('ta')">த</button>
-    <button class="lang-btn" onclick="setLang('kn')">ಕ</button>
+    <button class="lang-btn" onclick="setLang('te')">తెలుగు</button>
+    <button class="lang-btn" onclick="setLang('hi')">हिंदी</button>
+    <button class="lang-btn" onclick="setLang('ta')">தமிழ்</button>
+    <button class="lang-btn" onclick="setLang('kn')">ಕನ್ನಡ</button>
   </div>
 </div>
 
-<!-- STATS BAR -->
 <div class="stats-bar">
   <div class="stat-card">
     <div class="stat-val" id="sVolt">--</div>
@@ -394,10 +408,8 @@
   </div>
 </div>
 
-<!-- EDIT TOGGLE -->
 <button class="edit-toggle" onclick="toggleEdit()">✎ <span id="editLabel">Enter readings manually</span></button>
 
-<!-- EDIT BAR -->
 <div class="edit-bar" id="editBar">
   <input class="edit-field" id="inVolt" type="number" placeholder="Voltage (V)" step="0.1">
   <input class="edit-field" id="inCurr" type="number" placeholder="Current (A)" step="0.01">
@@ -406,13 +418,10 @@
   <button class="edit-save" onclick="saveReadings()">Update</button>
 </div>
 
-<!-- CHAT -->
 <div class="chat-wrap" id="chat"></div>
 
-<!-- QUICK CHIPS -->
 <div class="chips" id="chips"></div>
 
-<!-- INPUT -->
 <div class="input-row">
   <textarea class="msg-input" id="msgInput" rows="1"
     placeholder="Ask about your energy..."
@@ -436,7 +445,7 @@ let chatHistory = [];
 let speaking = false;
 let recognizing = false;
 let recognition = null;
-const POWER_LIMIT = 100;    // match your .ino
+const POWER_LIMIT = 100;    
 const POWER_WARN  = POWER_LIMIT * 0.8;
 
 // ═══════════════════════════════════════════
@@ -461,12 +470,12 @@ Reply in English.`
     ttsLang: 'te-IN',
     placeholder: 'విద్యుత్ గురించి అడగండి...',
     editLabel: 'రీడింగ్‌లు నమోదు చేయండి',
-    greeting: "నమస్కారం! నేను మీ Energy Advisor. పైన మీ రీడింగ్‌లు చూడవచ్చు. విద్యుత్ ఆదా, బిల్లు గురించి ఏమైనా అడగండి!",
+    greeting: "నమస్కారం! నేను మీ Energy Advisor. పైన మీ రీడింగులు చూడవచ్చు. విద్యుత్ ఆదా, బిల్లు గురించి ఏమైనా అడగండి!",
     chips: ['విద్యుత్ ఆదా చేయడం ఎలా?', 'పవర్ ఎక్కువగా ఉంది ఎందుకు?', 'బిల్లు అంచనా', 'ఇది సాధారణమేనా?'],
     systemPrompt: (r) => `You are a friendly energy advisor for a home in India.
 Current readings: Voltage=${r.volt??'unknown'}V, Current=${r.curr??'unknown'}A, Power=${r.pow??'unknown'}W, Accumulated Energy=${r.energy.toFixed(3)}kWh.
 Power limit is ${POWER_LIMIT}W.
-Give SHORT practical advice (3-4 sentences max). Use very simple Telugu words that illiterate/semi-literate users understand.
+Give SHORT practical advice (3-4 sentences max). Use very simple Telugu words that users understand.
 Reply ONLY in Telugu (తెలుగు).`
   },
   hi: {
@@ -511,12 +520,11 @@ Reply ONLY in Kannada (ಕನ್ನಡ).`
 };
 
 // ═══════════════════════════════════════════
-// ENERGY ACCUMULATION (never resets to 0)
+// ENERGY ACCUMULATION
 // ═══════════════════════════════════════════
 function tickEnergy() {
   const now = Date.now();
 
-  // Auto-reset every 30 minutes
   if (now >= resetAt) {
     accEnergy = 0;
     lastPowTs = null;
@@ -533,7 +541,6 @@ function tickEnergy() {
   }
   readings.energy = accEnergy;
 
-  // Update countdown label
   const remaining = Math.max(0, resetAt - now);
   const mm = String(Math.floor(remaining / 60000)).padStart(2, '0');
   const ss = String(Math.floor((remaining % 60000) / 1000)).padStart(2, '0');
@@ -541,11 +548,11 @@ function tickEnergy() {
   if (noteEl) noteEl.textContent = `Resets in ${mm}:${ss}`;
 
   updateStatsUI();
-  setTimeout(tickEnergy, 1000);  // tick every second for smooth countdown
+  setTimeout(tickEnergy, 1000);
 }
 
 // ═══════════════════════════════════════════
-// URL PARAM AUTO-LOAD (Blynk can pass values)
+// URL PARAM AUTO-LOAD
 // ═══════════════════════════════════════════
 function loadFromURL() {
   const p = new URLSearchParams(window.location.search);
@@ -572,7 +579,6 @@ function updateStatsUI() {
   pEl.textContent = pow  !== null ? pow.toFixed(1)  : '--';
   eEl.textContent = energy.toFixed(3);
 
-  // Color power
   pEl.className = 'stat-val';
   if (pow !== null) {
     if (pow >= POWER_LIMIT) pEl.classList.add('bad');
@@ -580,7 +586,6 @@ function updateStatsUI() {
     else pEl.classList.add('ok');
   }
 
-  // Warning banner
   const banner = document.getElementById('warnBanner');
   if (pow !== null && pow >= POWER_WARN) {
     document.getElementById('warnPower').textContent = pow.toFixed(1);
@@ -598,17 +603,22 @@ function setLang(lang) {
   document.querySelectorAll('.lang-btn').forEach((b,i) => {
     b.classList.toggle('active', ['en','te','hi','ta','kn'][i] === lang);
   });
-  document.getElementById('msgInput').placeholder = LANG[lang].placeholder;
+  
+  const inputEl = document.getElementById('msgInput');
+  inputEl.placeholder = LANG[lang].placeholder;
+  
+  // Dynamically change font family rules on input to render indicators clearly
+  inputEl.className = `msg-input ${lang}`;
+  
   document.getElementById('editLabel').textContent = LANG[lang].editLabel;
   buildChips();
-  // Update recognition lang
   if (recognition) recognition.lang = LANG[lang].ttsLang;
 }
 
 function buildChips() {
   const chips = LANG[currentLang].chips;
   document.getElementById('chips').innerHTML = chips.map(c =>
-    `<button class="chip" onclick="sendChip('${c.replace(/'/g,"\\'")}')">` + c + `</button>`
+    `<button class="chip ${currentLang}" onclick="sendChip('${c.replace(/'/g,"\\'")}')">` + c + `</button>`
   ).join('');
 }
 
@@ -633,12 +643,23 @@ function saveReadings() {
 }
 
 // ═══════════════════════════════════════════
-// CHAT
+// CHAT & CODES SECURED FOR GEMINI
 // ═══════════════════════════════════════════
-function addBubble(text, role) {
+function getApiKey() {
+  let key = localStorage.getItem('gemini_api_key');
+  if (!key) {
+    key = prompt("Please enter your Gemini API Key:");
+    if (key) {
+      localStorage.setItem('gemini_api_key', key.trim());
+    }
+  }
+  return key;
+}
+
+function addBubble(text, role, langClass = 'en') {
   const chat = document.getElementById('chat');
   const div = document.createElement('div');
-  div.className = `bubble ${role}`;
+  div.className = `bubble ${role} ${langClass}`;
   div.textContent = text;
   if (role === 'bot') {
     const btn = document.createElement('button');
@@ -669,58 +690,56 @@ async function sendMsg() {
   const input = document.getElementById('msgInput');
   const text = input.value.trim();
   if (!text) return;
-  
+
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    alert("API key required to interact with the advisor.");
+    return;
+  }
+
+  const userLang = currentLang; 
   input.value = '';
-  addBubble(text, 'user');
+  autoResize(input);
+  addBubble(text, 'user', userLang);
+  
+  // Restructuring chat logs into Gemini's multi-turn format schema
+  chatHistory.push({ role: 'user', parts: [{ text: text }] });
   showTyping();
 
-  // --- STEALTH KEY PROTECTION ---
-  // Breaking the key into two parts so GitHub's automated scanners don't auto-delete it.
-  const pA = "hf_sLEdeeAqkhWM";
-  const pB = "qYMFThczxikpsNpgWhwCAN";
-
   try {
-    const lang = LANG[currentLang];
-    const systemPrompt = lang.systemPrompt(readings);
-    
-    const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2", {
-      headers: { 
-        // We join the parts here so the scanner never sees the full string
-        Authorization: "Bearer " + pA + pB, 
-        "Content-Type": "application/json" 
-      },
-      method: "POST",
+    const lang = LANG[userLang];
+    // Routing directly to the lightweight gemini-1.5-flash engine
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        inputs: `<s>[INST] ${systemPrompt} \n User: ${text} [/INST]`,
-        parameters: { max_new_tokens: 250, temperature: 0.7 } 
-      }),
+        contents: chatHistory,
+        systemInstruction: {
+          parts: [{ text: lang.systemPrompt(readings) }]
+        }
+      })
     });
 
-    const result = await response.json();
+    const data = await resp.json();
     
-    // 1. Get the raw text
-    let fullText = result[0]?.generated_text || "";
-    
-    // 2. Extract only the AI's answer after [/INST]
-    let reply = fullText.includes('[/INST]') 
-                ? fullText.split('[/INST]').pop().trim() 
-                : fullText.trim();
-
-    // 3. FALLBACK: If the AI returns an empty string or just the prompt
-    if (!reply || reply === "" || reply.length < 2) {
-        reply = "I'm analyzing your power data. Based on your current " + readings.pow + "W usage, try reducing heavy loads to save money. Could you try rephrasing your question?";
+    if (data.error) {
+      throw new Error(data.error.message || "API failure diagnostics detected.");
     }
 
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, could not get a response.';
     removeTyping();
-    addBubble(reply, 'bot');
-    chatHistory.push({ role: 'assistant', content: reply });
-    
+    addBubble(reply, 'bot', userLang);
+    chatHistory.push({ role: 'model', parts: [{ text: reply }] });
   } catch(e) {
-    console.error(e);
     removeTyping();
-    addBubble('⚠️ Connection error. Please check your internet or try again in a moment.', 'bot');
+    console.error(e);
+    chatHistory.pop(); // Clear bad turn so it won't crash future requests
+    addBubble('⚠️ Error connecting to Gemini. Please check your API key or connection.', 'bot');
   }
-} // <--- Added the missing closing brace here!
+}
+
 function sendChip(text) {
   document.getElementById('msgInput').value = text;
   sendMsg();
@@ -738,27 +757,13 @@ function autoResize(el) {
 // TEXT TO SPEECH
 // ═══════════════════════════════════════════
 function speakText(text, btn) {
-  if (!('speechSynthesis' in window)) { alert('TTS not supported'); return; }
-  
-  if (speaking) { 
-    speechSynthesis.cancel(); 
-    speaking = false; 
-    btn.innerHTML='▶ Speak'; 
-    return; 
-  }
-
+  if (!('speechSynthesis' in window)) { alert('TTS not supported in this browser.'); return; }
+  if (speaking) { speechSynthesis.cancel(); speaking = false; btn.classList.remove('speaking'); btn.innerHTML='▶ Speak'; return; }
   const utt = new SpeechSynthesisUtterance(text);
-  
-  // PC FIX: Find a voice that matches your language
-  const voices = speechSynthesis.getVoices();
-  utt.voice = voices.find(v => v.lang.includes(currentLang)) || voices[0];
-  
   utt.lang = LANG[currentLang].ttsLang;
   utt.rate = 0.9;
-  
-  utt.onstart = () => { speaking = true; btn.innerHTML='■ Stop'; };
-  utt.onend = () => { speaking = false; btn.innerHTML='▶ Speak'; };
-  
+  utt.onstart = () => { speaking = true; btn.classList.add('speaking'); btn.innerHTML='■ Stop'; };
+  utt.onend   = () => { speaking = false; btn.classList.remove('speaking'); btn.innerHTML='▶ Speak'; };
   speechSynthesis.speak(utt);
 }
 
@@ -788,7 +793,6 @@ function toggleVoice() {
     const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
     document.getElementById('msgInput').value = transcript;
     autoResize(document.getElementById('msgInput'));
-    // Auto-send when final
     if (e.results[e.results.length - 1].isFinal) {
       recognition.stop();
       setTimeout(() => sendMsg(), 300);
@@ -810,7 +814,7 @@ window.onload = () => {
   loadFromURL();
   buildChips();
   tickEnergy();
-  addBubble(LANG[currentLang].greeting, 'bot');
+  addBubble(LANG[currentLang].greeting, 'bot', 'en');
 };
 </script>
 </body>
