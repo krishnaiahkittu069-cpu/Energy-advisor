@@ -558,25 +558,28 @@ async function sendMsg() {
   const text = input.value.trim();
   if (!text) return;
 
-  // Retrieve your saved key securely or ask for it
+  // 1. Get key and check if it's missing or an unconfigured placeholder
   let apiKey = localStorage.getItem('gemini_api_key');
-  if (!apiKey || apiKey.startsWith('Alza') || apiKey.includes('YOUR_')) {
-    apiKey = prompt("Please enter your Google Gemini API Key:");
-    if (apiKey) localStorage.setItem('gemini_api_key', apiKey.trim());
+  if (!apiKey || apiKey.trim() === "" || apiKey.includes("YOUR_") || apiKey.startsWith("Alza") === false) {
+    apiKey = prompt("Please enter a valid Google Gemini API Key (starts with AIza):");
+    if (apiKey && apiKey.trim() !== "") {
+      localStorage.setItem('gemini_api_key', apiKey.trim());
+    } else {
+      alert("An API key is required to use the AI advisor features.");
+      return;
+    }
   }
-  if (!apiKey) return;
 
   const activeLang = currentLang;
   input.value = '';
   autoResize(input);
   addBubble(text, 'user');
   
-  // Format text securely for Gemini API parameters
   chatHistory.push({ role: 'user', parts: [{ text: text }] });
   showTyping();
 
   try {
-    // Correct cross-origin routing URL bypasses CORS without requiring servers
+    // 2. Routing securely to the API endpoint
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
     const response = await fetch(url, {
       method: 'POST',
@@ -590,17 +593,23 @@ async function sendMsg() {
     const data = await response.json();
     removeTyping();
 
-    // Catch and extract text accurately out of Gemini response tokens
+    // 3. Catch structural API errors early
+    if (data.error) {
+      localStorage.removeItem('gemini_api_key'); // Wipe bad key instantly
+      addBubble(`⚠️ API Error: ${data.error.message}`, 'bot');
+      chatHistory.pop();
+      return;
+    }
+
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response decoded.';
     addBubble(reply, 'bot');
     chatHistory.push({ role: 'model', parts: [{ text: reply }] });
   } catch(e) {
     removeTyping();
-    chatHistory.pop(); // Remove failed user message from history array
-    addBubble('⚠️ API Error. Please verify your internet connection or check your API key quotas.', 'bot');
+    chatHistory.pop();
+    addBubble('⚠️ Error connecting to Gemini. Please check your internet connection or console logs.', 'bot');
   }
-}
-function sendChip(text) { document.getElementById('msgInput').value = text; sendMsg(); }
+}function sendChip(text) { document.getElementById('msgInput').value = text; sendMsg(); }
 function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } }
 function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 90) + 'px'; }
 
