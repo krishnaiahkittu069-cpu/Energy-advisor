@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Energy Advisor - AI Telemetry Cluster</title>
+    <title>Energy Advisor - Voice Assist Cluster</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased">
 
-    <div id="alertBanner" class="hidden bg-gradient-to-r from-red-600 to-amber-600 text-white text-center py-3 px-4 font-bold flex justify-between items-center sticky top-0 z-50 shadow-xl transition-all duration-300">
-        <span id="bannerText"><i class="fas fa-exclamation-triangle animate-bounce mr-2"></i> CRITICAL OVERLOAD LIMIT DETECTED!</span>
+    <div id="alertBanner" class="hidden bg-gradient-to-r from-red-600 to-amber-600 text-white text-center py-3 px-4 font-bold flex justify-between items-center sticky top-0 z-50 shadow-xl">
+        <span id="bannerText"><i class="fas fa-exclamation-triangle animate-bounce mr-2"></i> ALERT LIMIT EXCEEDED</span>
         <button onclick="dismissBanner()" class="text-white hover:text-slate-200 text-2xl font-black px-2">&times;</button>
     </div>
 
@@ -18,11 +18,11 @@
         <header class="flex flex-col md:flex-row justify-between items-center mb-6 bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg gap-4">
             <div class="flex items-center gap-3">
                 <div class="bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/30">
-                    <i class="fas fa-bolt text-2xl text-amber-400 animate-pulse"></i>
+                    <i class="fas fa-bolt text-2xl text-amber-400"></i>
                 </div>
                 <div>
                     <h1 class="text-xl font-black tracking-wider text-slate-100">ENERGY ADVISOR</h1>
-                    <p class="text-xs text-slate-500 font-mono">Blynk Framework Ready Cluster</p>
+                    <p class="text-xs text-slate-500 font-mono">Blynk Integrated Native Cluster</p>
                 </div>
             </div>
             
@@ -46,12 +46,12 @@
                     <h3 class="text-sm font-bold text-cyan-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                         <i class="fas fa-shield-halved"></i> Key Vault Authentication
                     </h3>
-                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">Stored fully isolated inside browser runtime sandboxes to escape automatic online code crawlers.</p>
+                    <p class="text-xs text-slate-500 mb-4">Please input your own Gemini API key. It is saved purely inside your local browser memory to bypass open web scanners.</p>
                     <div class="space-y-3">
-                        <input type="password" id="apiKeyInput" placeholder="Paste Gemini API Key" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500/50 transition-colors">
+                        <input type="password" id="apiKeyInput" placeholder="Paste Your Gemini API Key" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50">
                         <div class="flex gap-2">
-                            <button onclick="saveApiKey()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-3 rounded-xl text-xs tracking-wider transition-colors cursor-pointer">SAVE MODEL KEY</button>
-                            <button onclick="clearApiKey()" class="bg-slate-800 hover:bg-slate-700 text-slate-400 py-2 px-3 rounded-xl text-xs font-medium transition-colors cursor-pointer">CLEAR</button>
+                            <button onclick="saveApiKey()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-3 rounded-xl text-xs tracking-wider cursor-pointer">SAVE MODEL KEY</button>
+                            <button onclick="clearApiKey()" class="bg-slate-800 hover:bg-slate-700 text-slate-400 py-2 px-3 rounded-xl text-xs font-medium cursor-pointer">CLEAR</button>
                         </div>
                     </div>
                 </div>
@@ -68,15 +68,15 @@
                 <div class="grid grid-cols-2 gap-3 text-center font-mono">
                     <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800/40">
                         <div class="text-[10px] text-slate-500 uppercase font-sans tracking-wider mb-1">Voltage</div>
-                        <div id="valVoltage" class="text-lg font-bold text-slate-200">230.0 V</div>
+                        <div id="valVoltage" class="text-lg font-bold text-slate-400">0.0 V</div>
                     </div>
                     <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800/40">
                         <div class="text-[10px] text-slate-500 uppercase font-sans tracking-wider mb-1">Current</div>
-                        <div id="valCurrent" class="text-lg font-bold text-slate-200">0.00 A</div>
+                        <div id="valCurrent" class="text-lg font-bold text-slate-400">0.00 A</div>
                     </div>
                     <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800/40 col-span-2">
-                        <div class="text-[10px] text-slate-500 uppercase font-sans tracking-wider mb-1">Active Power (Safe Cap: 3000W)</div>
-                        <div id="valPower" class="text-xl font-bold text-emerald-400">0 W</div>
+                        <div class="text-[10px] text-slate-500 uppercase font-sans tracking-wider mb-1">Active Power (safe limit: 3000W)</div>
+                        <div id="valPower" class="text-xl font-bold text-slate-400">0 W</div>
                     </div>
                 </div>
             </div>
@@ -87,20 +87,20 @@
                         <h3 class="text-sm font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2">
                             <i class="fas fa-file-invoice-dollar"></i> Utility Billing
                         </h3>
-                        <div id="timer" class="font-mono bg-slate-950 px-2 py-0.5 rounded-lg text-xs text-amber-400 border border-slate-800 tracking-widest" title="Session Cycle Countdown">30:00</div>
+                        <div id="timer" class="font-mono bg-slate-950 px-2 py-0.5 rounded-lg text-xs text-amber-400 border border-slate-800 tracking-widest">30:00</div>
                     </div>
                     <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800/40 mb-3 font-mono space-y-1.5">
                         <div class="flex justify-between text-xs">
                             <span class="text-slate-500 font-sans">Accumulated Mass:</span>
-                            <span id="valEnergy" class="text-slate-200 font-bold">0.000 kWh</span>
+                            <span id="valEnergy" class="text-slate-400 font-bold">0.000 kWh</span>
                         </div>
                         <div class="flex justify-between text-xs">
                             <span class="text-slate-500 font-sans">Calculated Balance:</span>
-                            <span id="valBill" class="text-emerald-400 font-bold">₹0.00</span>
+                            <span id="valBill" class="text-slate-400 font-bold">₹0.00</span>
                         </div>
                     </div>
                 </div>
-                <button onclick="confirmAndResetBill()" class="w-full bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs tracking-wider transition-all shadow-md active:scale-[0.98] cursor-pointer uppercase">
+                <button onclick="confirmAndResetBill()" class="w-full bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs tracking-wider transition-all shadow-md cursor-pointer uppercase">
                     <i class="fas fa-circle-check mr-1.5"></i> Confirm & Clear Balance
                 </button>
             </div>
@@ -116,7 +116,7 @@
                     <span class="text-xs font-mono font-semibold ml-2 text-slate-400 tracking-tight">gemini-1.5-flash-native</span>
                 </div>
                 <div class="flex items-center gap-1.5 font-mono text-[10px] bg-slate-950 px-2 py-0.5 rounded-md border border-slate-800 text-cyan-400">
-                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span> SECURE PIPELINE
+                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span> VOICE ACCESS PIPELINE ACTIVE
                 </div>
             </div>
 
@@ -125,11 +125,11 @@
             </div>
 
             <div class="p-3 bg-slate-900 border-t border-slate-800 flex gap-2 items-center">
-                <button id="voiceBtn" onclick="startVoiceSearch()" class="bg-slate-950 hover:bg-slate-800 text-rose-400 border border-slate-800 p-3 rounded-xl transition-all active:scale-95 cursor-pointer" title="Trigger Acoustic Mic Scan">
-                    <i id="micIcon" class="fas fa-microphone text-base"></i>
+                <button id="voiceBtn" onclick="startVoiceSearch()" class="bg-slate-950 hover:bg-slate-800 text-rose-400 border border-slate-800 p-4 rounded-xl transition-all scale-105 cursor-pointer flex items-center justify-center" title="Tap to Speak">
+                    <i id="micIcon" class="fas fa-microphone text-xl"></i>
                 </button>
-                <input type="text" id="userInput" placeholder="Inquire about cluster consumption details..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-cyan-500 text-slate-200 font-mono tracking-wide placeholder-slate-600">
-                <button onclick="askGemini()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-3 rounded-xl font-bold transition-all flex items-center gap-2 text-xs tracking-wider active:scale-95 cursor-pointer uppercase">
+                <input type="text" id="userInput" placeholder="Inquire about cluster consumption details..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-cyan-500 text-slate-200 font-mono tracking-wide">
+                <button onclick="askGemini()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-3 rounded-xl font-bold transition-all flex items-center gap-2 text-xs tracking-wider cursor-pointer uppercase">
                     <span>TRANSMIT</span><i class="fas fa-paper-plane text-[10px]"></i>
                 </button>
             </div>
@@ -137,30 +137,26 @@
     </div>
 
     <script>
-        // --- State Variables Architecture ---
+        // --- Core Variables Architecture ---
         let currentLang = 'en';
         let countdownTime = 30 * 60; 
-        const POWER_LIMIT = 3000; 
-        let internalKwh = 0.000;
-        const ratePerUnit = 6.50; // Pricing matrix baseline rule
 
         const translations = {
-            en: { welcome: "System dashboard online. Awaiting data parameters or voice transmission...", placeholder: "Inquire about cluster consumption details...", warning: "CRITICAL OVERLOAD LIMIT DETECTED!", alertReset: "Confirm utility processing payout clearance and wipe usage metrics?", noKey: "Authentication missing. Please supply a valid model transaction key to the vault secure panel.", listening: "Acoustic channel open. Awaiting user spoken frame...", processing: "Streaming content packet array to Gemini node matrix..." },
-            te: { welcome: "వ్యవస్థ సిద్ధంగా ఉంది. డేటా పారామితులు లేదా వాయిస్ ఇన్‌పుట్ కోసం వేచి ఉంది...", placeholder: "విద్యుత్ వినియోగ వివరాల గురించి అడగండి...", warning: "హెచ్చరిక: గరిష్ట విద్యుత్ వినియోగ పరిమితి మించిపోయింది!", alertReset: "బిల్లు చెల్లింపును ధృవీకరించి రీసెట్ చేయాలనుకుంటున్నారా?", noKey: "జెమిని మోడల్ కీ లేదు. దయచేసి ముందుగా సేవ్ చేయండి.", listening: "వాయిస్ ఛానెల్ ఓపెన్ అయింది. మాట్లాడండి...", processing: "జెమిని నెట్‌వర్క్‌కు సమాచారాన్ని పంపుతోంది..." },
-            hi: { welcome: "सिस्टम ऑनलाइन है। डेटा मापदंडों या आवाज प्रसारण की प्रतीक्षा है...", placeholder: "बिजली खपत विवरण के बारे में पूछें...", warning: "चेतावनी: बिजली की खपत सुरक्षित सीमा से अधिक हो गई है!", alertReset: "क्या आप भुगतान की पुष्टि करके रीडिंग रीसेट करना चाहते हैं?", noKey: "प्रमाणीकरण गायब है। कृपया पहले जेमिनी एपीआई की (API Key) सहेजें।", listening: "आवाज चैनल सक्रिय है। कृपया बोलें...", processing: "जेमिनी नोड मैट्रिक्स को डेटा भेजा जा रहा है..." },
-            ta: { welcome: "அமைப்பு செயல்பாட்டில் உள்ளது. குரல் கட்டளைக்காகக் காத்திருக்கிறது...", placeholder: "மின் நுகர்வு விவரங்கள் பற்றி கேட்கவும்...", warning: "எச்சரிக்கை: மின் நுகர்வு பாதுகாப்பான வரம்பைத் தாண்டியது!", alertReset: "கட்டணத்தை உறுதிசெய்து அளவீடுகளை மீட்டமைக்க வேண்டுமா?", noKey: "அனுமதி இல்லை. தயவுசெய்து ஜெமினி API கீ-ஐ சேமிக்கவும்.", listening: "குரல் வழி கண்டறிதல் செயலில் உள்ளது. பேசவும்...", processing: "பதிலைப் பெற செயலாக்கப்படுகிறது..." },
-            mr: { welcome: "सिस्टम ऑनलाईन आहे. डेटा पॅरामीटर्स किंवा आवाज इनपुटची वाट पाहत आहे...", placeholder: "वीज वापर तपशीलांबद्दल विचारा...", warning: "धोका: वीज वापर सुरक्षित मर्यादेपेक्षा जास्त झाला आहे!", alertReset: "डेटा भरल्याची पुष्टी करून डेटा रीसेट करू इच्छिता?", noKey: "कृपया आधी जेमिनी API की सेव्ह करा.", listening: "व्हॉइस चॅनेल सुरू आहे. बोला...", processing: "जेमिनी नेटवर्कवर प्रक्रिया सुरू आहे..." },
-            kn: { welcome: "ವ್ಯವಸ್ಥೆ ಸಿದ್ಧವಾಗಿದೆ. ಡೇಟಾ ನಿಯತಾಂಕಗಳು ಅಥವಾ ಧ್ವನಿ ಇನ್‌ಪುಟ್‌ಗಾಗಿ ಕಾಯುತ್ತಿದೆ...", placeholder: "ವಿದ್ಯುತ್ ಬಳಕೆಯ ವಿವರಗಳ ಬಗ್ಗೆ ವಿಚಾರಿಸಿ...", warning: "ಎಚ್ಚರಿಕೆ: ವಿದ್ಯುತ್ ಬಳಕೆ ಸುರಕ್ಷಿತ ಮಿತಿಗಿಂತ ಹೆಚ್ಚಾಗಿದೆ!", alertReset: "ಬಿಲ್ ಪಾವತಿಯನ್ನು ಖಚಿತಪಡಿಸಲು ಮತ್ತು ರೀಸೆಟ್ ಮಾಡಲು ಬಯಸುವಿರಾ?", noKey: "ದಯವಿಟ್ಟು ಮೊದಲು ಜೆಮಿನಿ API ಕೀಲಿಯನ್ನು ಉಳಿಸಿ.", listening: "ಧ್ವನಿ ಚಾನಲ್ ಸಕ್ರಿಯವಾಗಿದೆ. ಈಗ ಮಾತನಾಡಿ...", processing: "ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ..." }
+            en: { welcome: "System dashboard online. Tap the big microphone to speak.", placeholder: "Ask anything about your energy usage...", warning: "CRITICAL OVERLOAD LIMIT DETECTED!", alertReset: "Confirm payment and reset your readings?", noKey: "Authentication missing. Please add your Gemini key first.", listening: "Listening... speak now.", processing: "Thinking..." },
+            te: { welcome: "వ్యవస్థ సిద్ధంగా ఉంది. మాట్లాడటానికి మైక్రోఫోన్ బటన్ నొక్కండి.", placeholder: "విద్యుత్ వినియోగ వివరాల గురించి అడగండి...", warning: "హెచ్చరిక: గరిష్ట విద్యుత్ వినియోగ పరిమితి మించిపోయింది!", alertReset: "బిల్లు చెల్లింపును ధృవీకరించి రీసెట్ చేయాలనుకుంటున్నారా?", noKey: "జెమిని మోడల్ కी లేదు. దయచేసి ముందుగా సేవ్ చేయండి.", listening: "వింటున్నారు... మాట్లాడండి...", processing: "ఆलोచిస్తోంది..." },
+            hi: { welcome: "सिस्टम ऑनलाइन है। बोलने के लिए बड़े माइक्रोफ़ोन बटन को दबाएं।", placeholder: "बिजली खपत विवरण के बारे में पूछें...", warning: "चेतावनी: बिजली की खपत सुरक्षित सीमा से अधिक हो गई है!", alertReset: "क्या आप भुगतान की पुष्टि करके रीडिंग रीसेट करना चाहते हैं?", noKey: "प्रमाणीकरण गायब है। कृपया पहले जेमिनी एपीआई की सहेजें।", listening: "सुन रहा हूँ... अब बोलें...", processing: "सोच रहा हूँ..." },
+            ta: { welcome: "அமைப்பு தயாராக உள்ளது. பேச மைக்ரோஃபோன் பொத்தானை அழுத்தவும்.", placeholder: "மின் நுகர்வு விவரங்கள் பற்றி கேட்கவும்...", warning: "எச்சரிக்கை: மின் நுகர்வு பாதுகாப்பான வரம்பைத் தாண்டியது!", alertReset: "கட்டணத்தை உறுதிசெய்து அளவீடுகளை மீட்டமைக்க வேண்டுமா?", noKey: "அனுமதி இல்லை. தயவுசெய்து ஜெமினி API கீ-ஐ சேமிக்கவும்.", listening: "கேட்கிறது... இப்போது பேசவும்...", processing: "யோசிக்கிறது..." },
+            mr: { welcome: "सिस्टम ऑनलाईन आहे. बोलण्यासाठी मोठ्या मायक्रोफोन बटणावर टॅप करा.", placeholder: "वीज वापर तपशीलांबद्दल विचारा...", warning: "धोका: वीज वापर सुरक्षित मर्यादेपेक्षा जास्त झाला आहे!", alertReset: "डेटा भरल्याची पुष्टी करून डेटा रीसेट करू इच्छिता?", noKey: "कृपया आधी जेमिनी API की सेव्ह करा.", listening: "ऐकत आहे... आता बोला...", processing: "विचार करत आहे..." },
+            kn: { welcome: "ವ್ಯವಸ್ಥೆ ಸಿದ್ಧವಾಗಿದೆ. ಮಾತನಾಡಲು ಮೈಕ್ರೊಫೋನ್ ಬಟನ್ ಒತ್ತಿರಿ.", placeholder: "ವ್ಯವಸ್ಥೆಯ ಬಳಕೆಯ ವಿವರಗಳ ಬಗ್ಗೆ ವಿಚಾರಿಸಿ...", warning: "ಎಚ್ಚರಿಕೆ: ವಿದ್ಯುತ್ ಬಳಕೆ ಸುರಕ್ಷಿತ ಮಿತಿಗಿಂತ ಹೆಚ್ಚಾಗಿದೆ!", alertReset: "ಬಿಲ್ ಪಾವತಿಯನ್ನು ಖಚಿತಪಡಿಸಲು ಮತ್ತು ರೀಸೆಟ್ ಮಾಡಲು ಬಯಸುವಿರಾ?", noKey: "ದಯವಿಟ್ಟು ಮೊದಲು ಜೆಮಿನಿ API ಕೀಲಿಯನ್ನು ಉಳಿಸಿ.", listening: "ಕೇಳಿಸಲಾಗುತ್ತಿದೆ... ಈಗ ಮಾತನಾಡಿ...", processing: "ಚಿಂತಿಸುತ್ತಿದೆ..." }
         };
 
         window.onload = function() {
             loadApiKey();
             startCountdown();
-            startTelemetrySimulation();
             changeLanguage(); 
         };
 
-        // --- Isolation Vault Key Handlers ---
+        // --- Isolation Vault Storage System ---
         function loadApiKey() {
             const savedKey = localStorage.getItem('gemini_api_key');
             const statusEl = document.getElementById('keyStatus');
@@ -177,18 +173,18 @@
             const rawValue = document.getElementById('apiKeyInput').value.trim();
             if(rawValue && rawValue !== "••••••••••••••••••••••••••••••••") {
                 localStorage.setItem('gemini_api_key', rawValue);
-                appendLog('System Vault', 'Authentication credentials successfully isolated locally.', 'text-emerald-400');
+                appendLog('System Vault', 'Key successfully saved inside your local browser vault.', 'text-emerald-400');
                 loadApiKey();
             }
         }
 
+        // Fix logic explicitly bypassing the front text dots to ensure clearing functions run properly
         function clearApiKey() {
             localStorage.removeItem('gemini_api_key');
-            appendLog('System Vault', 'Cleared running storage registers.', 'text-amber-400');
+            appendLog('System Vault', 'Cleared saved model registers.', 'text-amber-400');
             loadApiKey();
         }
 
-        // --- Multilingual Runtime Transformation ---
         function changeLanguage() {
             currentLang = document.getElementById('langSelect').value;
             const dict = translations[currentLang];
@@ -197,7 +193,6 @@
             document.getElementById('bannerText').innerHTML = `<i class="fas fa-exclamation-triangle animate-bounce mr-2"></i> ${dict.warning}`;
         }
 
-        // --- 30-Minute Cycle Run Handler ---
         function startCountdown() {
             const timerEl = document.getElementById('timer');
             setInterval(() => {
@@ -209,55 +204,28 @@
             }, 1000);
         }
 
-        // --- Balance Matrix Clearance Handlers ---
         function confirmAndResetBill() {
             if (confirm(translations[currentLang].alertReset)) {
-                internalKwh = 0.000;
                 document.getElementById('valEnergy').innerText = "0.000 kWh";
                 document.getElementById('valBill').innerText = "₹0.00";
-                appendLog('Ledger Engine', 'Bill balance settled. Transaction counter sets flushed back to zero.', 'text-purple-400 font-semibold');
+                appendLog('Ledger Engine', 'Bill balance reset to zero.', 'text-purple-400 font-semibold');
             }
         }
 
-        // --- Emulated Dynamic Hardware Grid Sensors ---
-        function startTelemetrySimulation() {
-            setInterval(() => {
-                const voltage = (215 + Math.random() * 25).toFixed(1);
-                const current = (0.5 + Math.random() * 16).toFixed(2);
-                const power = Math.round(voltage * current);
-
-                // Incremental addition logic simulating ongoing grid consumption draw
-                internalKwh += (power / 3600000) * 3; 
-
-                document.getElementById('valVoltage').innerText = `${voltage} V`;
-                document.getElementById('valCurrent').innerText = `${current} A`;
-                document.getElementById('valEnergy').innerText = `${internalKwh.toFixed(3)} kWh`;
-                document.getElementById('valBill').innerText = `₹${(internalKwh * ratePerUnit).toFixed(2)}`;
-                
-                const powerEl = document.getElementById('valPower');
-                powerEl.innerText = `${power} W`;
-
-                const banner = document.getElementById('alertBanner');
-                if (power > POWER_LIMIT) {
-                    powerEl.className = "text-xl font-bold text-rose-500 animate-pulse";
-                    banner.classList.remove('hidden');
-                } else {
-                    powerEl.className = "text-xl font-bold text-emerald-400";
-                }
-            }, 3000);
-        }
-
+        // Visual handling rules for security overhead alert state dismissals
         function dismissBanner() {
             document.getElementById('alertBanner').classList.add('hidden');
         }
 
-        // --- Web Speech Acoustic Parsing System ---
+        // --- Web Speech Acoustic Voice INPUT Engine ---
         function startVoiceSearch() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                appendLog('Acoustic Bus', 'Web Speech Engine access standard is absent from browser software frames.', 'text-rose-500');
+                appendLog('Acoustic Bus', 'Voice recognition is not supported in this browser.', 'text-rose-500');
                 return;
             }
+
+            window.speechSynthesis.cancel();
 
             const recognition = new SpeechRecognition();
             recognition.lang = currentLang === 'en' ? 'en-US' : currentLang === 'hi' ? 'hi-IN' : currentLang === 'te' ? 'te-IN' : currentLang === 'ta' ? 'ta-IN' : currentLang === 'mr' ? 'mr-IN' : 'kn-IN';
@@ -265,33 +233,55 @@
             
             recognition.onstart = () => {
                 micIcon.className = "fas fa-microphone-lines text-rose-500 animate-ping";
-                appendLog('Acoustic Bus', translations[currentLang].listening, 'text-cyan-500');
+                appendLog('Audio Engine', translations[currentLang].listening, 'text-cyan-500');
             };
-            recognition.onerror = () => { micIcon.className = "fas fa-microphone text-base text-rose-400"; };
-            recognition.onend = () => { micIcon.className = "fas fa-microphone text-base text-rose-400"; };
+            recognition.onerror = () => { micIcon.className = "fas fa-microphone text-xl text-rose-400"; };
+            recognition.onend = () => { micIcon.className = "fas fa-microphone text-xl text-rose-400"; };
             
             recognition.onresult = (event) => {
                 const voicePrompt = event.results[0][0].transcript;
                 document.getElementById('userInput').value = voicePrompt;
-                appendLog('Transmit Frame (Voice)', voicePrompt, 'text-slate-300 font-bold');
+                appendLog('You Said', voicePrompt, 'text-slate-300 font-bold');
                 askGemini(); 
             };
             recognition.start();
         }
 
-        // --- Secure Direct API Stream Process System ---
+        // --- Native Browser Acoustic Text-To-Speech OUTPUT Engine ---
+        function speakResponseText(rawText) {
+            if (!('speechSynthesis' in window)) return;
+
+            window.speechSynthesis.cancel();
+
+            const cleanSpeechText = rawText.replace(/[\*\#\-\`\_]/g, '');
+            const speechNode = new SpeechSynthesisUtterance(cleanSpeechText);
+            
+            speechNode.lang = currentLang === 'en' ? 'en-US' : 
+                              currentLang === 'hi' ? 'hi-IN' : 
+                              currentLang === 'te' ? 'te-IN' : 
+                              currentLang === 'ta' ? 'ta-IN' : 
+                              currentLang === 'mr' ? 'mr-IN' : 'kn-IN';
+            
+            speechNode.rate = 0.90; 
+            speechNode.pitch = 1.0;
+            
+            window.speechSynthesis.speak(speechNode);
+        }
+
+        // --- Secure Background API Stream Pipeline ---
         async function askGemini() {
             const inputEl = document.getElementById('userInput');
             const prompt = inputEl.value.trim();
             if (!prompt) return;
 
+            // BACKGROUND SELECTION FIX: Read background cache storage register directly to completely bypass screen dots
             const apiKey = localStorage.getItem('gemini_api_key');
             if (!apiKey) {
                 alert(translations[currentLang].noKey);
                 return;
             }
 
-            appendLog('Transmit Frame', prompt, 'text-slate-300');
+            appendLog('User Question', prompt, 'text-slate-300');
             inputEl.value = ''; 
 
             const runtimeTelemetrySnapshot = {
@@ -315,7 +305,6 @@
             outputEl.scrollTop = outputEl.scrollHeight;
 
             try {
-                // Secure unified native HTTP delivery mechanism for hosted app execution pipelines
                 const API_URI = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
                 
                 const connectionStream = await fetch(API_URI, {
@@ -324,7 +313,7 @@
                     body: JSON.stringify({
                         contents: [{
                             parts: [{
-                                text: `System Parameter Context: ${JSON.stringify(runtimeTelemetrySnapshot)}. task: Address the prompt concisely, completely translating structure patterns into language code explicitly requested (${currentLang}). Instruction: ${prompt}`
+                                text: `Context: ${JSON.stringify(runtimeTelemetrySnapshot)}. System Task: Answer the user's question. Since the user might be illiterate, keep your reply extremely short, simple, conversational, and direct (max 2 sentences). You MUST write entirely in this specific language choice: ${currentLang}. Question: ${prompt}`
                             }]
                         }]
                     })
@@ -338,8 +327,11 @@
                 if (connectionStream.ok && contentData.candidates && contentData.candidates[0].content?.parts?.[0]?.text) {
                     const aiResultReply = contentData.candidates[0].content.parts[0].text;
                     appendLog('Gemini Core AI', aiResultReply, 'text-cyan-400');
+                    
+                    // Automatically read out response text via Web Audio Engine 
+                    speakResponseText(aiResultReply);
                 } else {
-                    let logFaultDetail = "Unable to process pipeline request. Check if your API token contains adequate billing provisions.";
+                    let logFaultDetail = "Unable to process pipeline request.";
                     if (contentData.error) logFaultDetail = `Status ${contentData.error.status}: ${contentData.error.message}`;
                     appendLog('Pipeline Fault Tracker', logFaultDetail, 'text-rose-400');
                 }
@@ -347,7 +339,7 @@
             } catch (networkException) {
                 const targetLoadingLine = document.getElementById(placeholderId);
                 if(targetLoadingLine) targetLoadingLine.remove();
-                appendLog('Pipeline Network Exception', `Connection rejected. Ensure your client frame retains routing permission rules. Details: ${networkException.message}`, 'text-rose-500');
+                appendLog('Pipeline Network Exception', `Connection rejected: ${networkException.message}`, 'text-rose-500');
             }
         }
 
