@@ -46,9 +46,9 @@
                     <h3 class="text-sm font-bold text-cyan-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                         <i class="fas fa-shield-halved"></i> Key Vault Authentication
                     </h3>
-                    <p class="text-xs text-slate-500 mb-4">Please input your own Gemini API key. It is saved purely inside your local browser memory to bypass open web scanners.</p>
+                    <p class="text-xs text-slate-500 mb-4">Please input your own Gemini API key. It clears automatically on click to allow error-free pasting.</p>
                     <div class="space-y-3">
-                        <input type="password" id="apiKeyInput" placeholder="Paste Your Gemini API Key" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50">
+                        <input type="text" id="apiKeyInput" onfocus="clearInputOnFocus()" placeholder="Paste Your Gemini API Key" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50 font-mono">
                         <div class="flex gap-2">
                             <button onclick="saveApiKey()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-3 rounded-xl text-xs tracking-wider cursor-pointer">SAVE MODEL KEY</button>
                             <button onclick="clearApiKey()" class="bg-slate-800 hover:bg-slate-700 text-slate-400 py-2 px-3 rounded-xl text-xs font-medium cursor-pointer">CLEAR</button>
@@ -143,7 +143,7 @@
 
         const translations = {
             en: { welcome: "System dashboard online. Tap the big microphone to speak.", placeholder: "Ask anything about your energy usage...", warning: "CRITICAL OVERLOAD LIMIT DETECTED!", alertReset: "Confirm payment and reset your readings?", noKey: "Authentication missing. Please add your Gemini key first.", listening: "Listening... speak now.", processing: "Thinking..." },
-            te: { welcome: "వ్యవస్థ సిద్ధంగా ఉంది. మాట్లాడటానికి మైక్రోఫోన్ బటన్ నొక్కండి.", placeholder: "విద్యుత్ వినియోగ వివరాల గురించి అడగండి...", warning: "హెచ్చరిక: గరిష్ట విద్యుత్ వినియోగ పరిమితి మించిపోయింది!", alertReset: "బిల్లు చెల్లింపును ధృవీకరించి రీసెట్ చేయాలనుకుంటున్నారా?", noKey: "జెమిని మోడల్ కी లేదు. దయచేసి ముందుగా సేవ్ చేయండి.", listening: "వింటున్నారు... మాట్లాడండి...", processing: "ఆलोచిస్తోంది..." },
+            te: { welcome: "వ్యవస్థ సిద్ధంగా ఉంది. మాట్లాడటానికి మైక్రోఫోన్ బటన్ నొక్కండి.", placeholder: "విద్యుత్ వినియోగ వివరాల గురించి अడగండి...", warning: "హెచ్చరిక: గరిష్ట విద్యుత్ వినియోగ పరిమితి మించిపోయింది!", alertReset: "బిల్లు చెల్లింపును ధృవీకరించి रीसेट చేయాలనుకుంటున్నారా?", noKey: "జెమిని మోడల్ కీ లేదు. దయచేసి ముందుగా సేవ్ చేయండి.", listening: "వింటున్నారు... మాట్లాడండి...", processing: "ఆలోచిస్తోంది..." },
             hi: { welcome: "सिस्टम ऑनलाइन है। बोलने के लिए बड़े माइक्रोफ़ोन बटन को दबाएं।", placeholder: "बिजली खपत विवरण के बारे में पूछें...", warning: "चेतावनी: बिजली की खपत सुरक्षित सीमा से अधिक हो गई है!", alertReset: "क्या आप भुगतान की पुष्टि करके रीडिंग रीसेट करना चाहते हैं?", noKey: "प्रमाणीकरण गायब है। कृपया पहले जेमिनी एपीआई की सहेजें।", listening: "सुन रहा हूँ... अब बोलें...", processing: "सोच रहा हूँ..." },
             ta: { welcome: "அமைப்பு தயாராக உள்ளது. பேச மைக்ரோஃபோன் பொத்தானை அழுத்தவும்.", placeholder: "மின் நுகர்வு விவரங்கள் பற்றி கேட்கவும்...", warning: "எச்சரிக்கை: மின் நுகர்வு பாதுகாப்பான வரம்பைத் தாண்டியது!", alertReset: "கட்டணத்தை உறுதிசெய்து அளவீடுகளை மீட்டமைக்க வேண்டுமா?", noKey: "அனுமதி இல்லை. தயவுசெய்து ஜெமினி API கீ-ஐ சேமிக்கவும்.", listening: "கேட்கிறது... இப்போது பேசவும்...", processing: "யோசிக்கிறது..." },
             mr: { welcome: "सिस्टम ऑनलाईन आहे. बोलण्यासाठी मोठ्या मायक्रोफोन बटणावर टॅप करा.", placeholder: "वीज वापर तपशीलांबद्दल विचारा...", warning: "धोका: वीज वापर सुरक्षित मर्यादेपेक्षा जास्त झाला आहे!", alertReset: "डेटा भरल्याची पुष्टी करून डेटा रीसेट करू इच्छिता?", noKey: "कृपया आधी जेमिनी API की सेव्ह करा.", listening: "ऐकत आहे... आता बोला...", processing: "विचार करत आहे..." },
@@ -160,25 +160,38 @@
         function loadApiKey() {
             const savedKey = localStorage.getItem('gemini_api_key');
             const statusEl = document.getElementById('keyStatus');
-            if (savedKey) {
+            const inputEl = document.getElementById('apiKeyInput');
+            
+            if (savedKey && savedKey.trim().length > 0) {
                 statusEl.innerHTML = `<span class="text-emerald-400 font-bold"><i class="fas fa-circle-check mr-1"></i>VAULT SECURED</span>`;
-                document.getElementById('apiKeyInput').value = "••••••••••••••••••••••••••••••••";
+                // Generate a mask that perfectly corresponds to the actual length of the stored string
+                inputEl.value = "•".repeat(savedKey.length);
             } else {
                 statusEl.innerHTML = `<span class="text-rose-400 font-bold"><i class="fas fa-circle-dot mr-1"></i>UNLOCKED EMPTY</span>`;
-                document.getElementById('apiKeyInput').value = "";
+                inputEl.value = "";
+            }
+        }
+
+        function clearInputOnFocus() {
+            const inputEl = document.getElementById('apiKeyInput');
+            // If it contains mask dots, clear it out instantly so the user can paste freshly
+            if (inputEl.value.includes("•")) {
+                inputEl.value = "";
             }
         }
 
         function saveApiKey() {
-            const rawValue = document.getElementById('apiKeyInput').value.trim();
-            if(rawValue && rawValue !== "••••••••••••••••••••••••••••••••") {
+            const inputEl = document.getElementById('apiKeyInput');
+            const rawValue = inputEl.value.trim();
+            
+            // Only update memory records if they didn't just re-submit unchanged dots
+            if(rawValue && !rawValue.includes("•")) {
                 localStorage.setItem('gemini_api_key', rawValue);
                 appendLog('System Vault', 'Key successfully saved inside your local browser vault.', 'text-emerald-400');
                 loadApiKey();
             }
         }
 
-        // Fix logic explicitly bypassing the front text dots to ensure clearing functions run properly
         function clearApiKey() {
             localStorage.removeItem('gemini_api_key');
             appendLog('System Vault', 'Cleared saved model registers.', 'text-amber-400');
@@ -212,7 +225,6 @@
             }
         }
 
-        // Visual handling rules for security overhead alert state dismissals
         function dismissBanner() {
             document.getElementById('alertBanner').classList.add('hidden');
         }
@@ -276,7 +288,7 @@
 
             // BACKGROUND SELECTION FIX: Read background cache storage register directly to completely bypass screen dots
             const apiKey = localStorage.getItem('gemini_api_key');
-            if (!apiKey) {
+            if (!apiKey || apiKey.trim().length === 0) {
                 alert(translations[currentLang].noKey);
                 return;
             }
