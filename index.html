@@ -321,17 +321,23 @@
 </head>
 <body>
 
+<!-- Setup Overlay -->
 <div id="setup-overlay">
   <div class="setup-box">
     <div class="setup-logo">⚡ Smart<span>Watt</span></div>
     <div class="setup-subtitle">Your IoT Energy Advisor. Enter your Gemini API key to activate the AI assistant. Your key stays in your browser only.</div>
     <div class="setup-label">Gemini API Key</div>
-    <input type="password" id="api-key-input" class="setup-input" placeholder="AIzaSy..." autocomplete="off">
+    <div style="position:relative">
+      <input type="text" id="api-key-input" class="setup-input" placeholder="AIzaSy..." autocomplete="off" style="padding-right:44px;font-family:var(--mono);letter-spacing:1px">
+      <button onclick="toggleKeyVis()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px" id="eye-btn">👁</button>
+    </div>
+    <div id="key-error" style="color:#f87171;font-size:12px;margin-top:6px;display:none"></div>
     <button class="setup-btn" onclick="saveKey()">Activate AI Advisor →</button>
-    <div class="setup-note">🔒 Stored locally in your browser. Never sent to any server except Gemini's API. <br>No scanner, no exposure.</div>
+    <div class="setup-note">🔒 Stored in your browser's localStorage. Only sent to Google's Gemini API.<br>Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--accent)">aistudio.google.com/apikey</a></div>
   </div>
 </div>
 
+<!-- Payment Modal -->
 <div class="modal-overlay" id="pay-modal">
   <div class="modal-box">
     <div class="modal-icon">💳</div>
@@ -343,6 +349,7 @@
 </div>
 
 <div class="app">
+  <!-- Topbar -->
   <div class="topbar">
     <div class="logo">⚡ Smart<span>Watt</span></div>
     <div class="topbar-right">
@@ -362,6 +369,7 @@
     </div>
   </div>
 
+  <!-- Sidebar -->
   <div class="sidebar">
     <div>
       <div class="section-title">Live Readings</div>
@@ -432,6 +440,7 @@
     </div>
   </div>
 
+  <!-- Main Chat -->
   <div class="main">
     <div class="main-header">
       <div>
@@ -496,7 +505,7 @@ const LANG = {
     connFail: '⚠ Connection Error'
   },
   te: {
-    placeholder: 'మీ शक्ति వినియోగం గురించి అడగండి…',
+    placeholder: 'మీ శక్తి వినియోగం గురించి అడగండి…',
     welcome: `నమస్కారం! 👋 నేను మీ SmartWatt AI ఎనర్జీ సలహాదారుడిని. మీ ESP32 మీటర్ నుండి నేరుగా డేటా పొందుతున్నాను. విద్యుత్ వినియోగం, బిల్లులు, ఆదా చిట్కాలు అన్నీ అడగవచ్చు!`,
     quickPrompts: ['ప్రస్తుత వినియోగం ఎంత?', 'విద్యుత్ ఆదా చేయడం ఎలా?', 'నా బిల్లు అంచనా వేయండి', 'అసాధారణ వినియోగం ఉందా?'],
     ins: ['రోజువారీ వినియోగం పర్యవేక్షించండి', 'పీక్ సమయం: సాయంత్రం 6-10', 'నిష్క్రియ పరికరాలు తనిఖీ చేయండి'],
@@ -525,12 +534,12 @@ const LANG = {
     quickPrompts: ['आत्ता किती वीज वापरतोय?', 'वीज कशी वाचवायची?', 'महिन्याचे बिल किती येईल?', 'असामान्य वापर आहे का?'],
     ins: ['दैनंदिन वापर तपासा', 'पीक वेळ: संध्याकाळी 6-10', 'निष्क्रिय उपकरणे तपासा'],
     connOk: '⚡ ESP32 जोडले आहे',
-    connFail: '⚠ कणेक्शन त्रुटी'
+    connFail: '⚠ कनेक्शन त्रुटी'
   },
   kn: {
     placeholder: 'ನಿಮ್ಮ ಶಕ್ತಿ ಬಳಕೆಯ ಬಗ್ಗೆ ಕೇಳಿ…',
     welcome: `ನಮಸ್ಕಾರ! 👋 ನಾನು ನಿಮ್ಮ SmartWatt AI ಶಕ್ತಿ ಸಲಹೆಗಾರ. ESP32 ಮೀಟರ್‌ನಿಂದ ನೇರ ಡೇಟಾ ಪಡೆಯುತ್ತಿದ್ದೇನೆ. ವಿದ್ಯುತ್ ಬಳಕೆ, ಬಿಲ್, ಉಳಿತಾಯ ಸಲಹೆಗಳು — ಎಲ್ಲವನ್ನೂ ಕೇಳಿ!`,
-    quickPrompts: ['ಈಗ ಎಷ್ಟು ವಿದ್ಯುತ್ ಬಳಕೆ?', 'ವಿದ್ಯುತ್ ಉಳಿಸುವುದು ಹೇಗೆ?', 'ಮಾಸಿಕ ಬಿಲ್ ಎಷ್ಟಾಗುತ್ತದೆ?', 'ಅಸಾನ್ಯ ಬಳಕೆ ಇದೆಯಾ?'],
+    quickPrompts: ['ಈಗ ಎಷ್ಟು ವಿದ್ಯುತ್ ಬಳಕೆ?', 'ವಿದ್ಯುತ್ ಉಳಿಸುವುದು ಹೇಗೆ?', 'ಮಾಸಿಕ ಬಿಲ್ ಎಷ್ಟಾಗುತ್ತದೆ?', 'ಅಸಾಮಾನ್ಯ ಬಳಕೆ ಇದೆಯಾ?'],
     ins: ['ದೈನಂದಿನ ಬಳಕೆ ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಿ', 'ಪೀಕ್ ಸಮಯ: ಸಂಜೆ 6-10', 'ನಿಷ್ಕ್ರಿಯ ಸಾಧನಗಳನ್ನು ಪರಿಶೀಲಿಸಿ'],
     connOk: '⚡ ESP32 ಸಂಪರ್ಕಿಸಲಾಗಿದೆ',
     connFail: '⚠ ಸಂಪರ್ಕ ದೋಷ'
@@ -539,23 +548,33 @@ const LANG = {
 
 // ── Init ──
 window.onload = () => {
-  const saved = localStorage.getItem('sw_api_key');
-  if (saved) { apiKey = saved; hidSetup(); initApp(); }
+  // Try new key first, fall back to old key for migration
+  const saved = localStorage.getItem('sw_gemini_key_v2') || localStorage.getItem('sw_api_key');
+  if (saved && saved.length > 10) { apiKey = saved; localStorage.setItem('sw_gemini_key_v2', saved); hidSetup(); initApp(); }
   initChart();
 };
 
+function toggleKeyVis() {
+  const inp = document.getElementById('api-key-input');
+  const btn = document.getElementById('eye-btn');
+  if (inp.type === 'text') { inp.type = 'password'; btn.textContent = '🙈'; }
+  else { inp.type = 'text'; btn.textContent = '👁'; }
+}
 function saveKey() {
   const k = document.getElementById('api-key-input').value.trim();
-  if (!k.startsWith('AIza') || k.length < 20) { alert('Please enter a valid Gemini API key (starts with AIzaSy…)'); return; }
+  const errEl = document.getElementById('key-error');
+  if (!k) { errEl.textContent = 'Please enter your Gemini API key.'; errEl.style.display='block'; return; }
+  if (k.length < 15) { errEl.textContent = 'Key looks too short. Please check and paste again.'; errEl.style.display='block'; return; }
+  errEl.style.display = 'none';
   apiKey = k;
-  localStorage.setItem('sw_api_key', k);
+  try { localStorage.setItem('sw_gemini_key_v2', k); } catch(e) { console.warn('localStorage unavailable, key in memory only'); }
   hidSetup();
   initApp();
 }
 function hidSetup() { document.getElementById('setup-overlay').style.display = 'none'; }
 function resetKey() {
   if (!confirm('Reset API key? You will need to enter it again.')) return;
-  localStorage.removeItem('sw_api_key');
+  localStorage.removeItem('sw_gemini_key_v2'); localStorage.removeItem('sw_gemini_key_v2'); localStorage.removeItem('sw_api_key');
   apiKey = '';
   conversationHistory = [];
   document.getElementById('messages').innerHTML = '';
@@ -834,49 +853,80 @@ CONTEXT:
 - Budget used: ${((totalEnergy/200)*100).toFixed(1)}%
 - Current power status: ${readings.power > 1800 ? 'HIGH ALERT' : readings.power > 1200 ? 'ABOVE AVERAGE' : 'NORMAL'}
 
-Respond in ${langNames[currentLang]}. Be concise, practical, and friendly. Use emojis sparingly. Give specific advice based on the live readings. If usage is high, say so. If someone asks about bills, use the exact live data above Simon.`;
+Respond in ${langNames[currentLang]}. Be concise, practical, and friendly. Use emojis sparingly. Give specific advice based on the live readings. If usage is high, say so. If someone asks about bills, use the exact live data above.`;
 
   conversationHistory.push({ role: 'user', content: text });
   const messages = conversationHistory.slice(-10);
 
   try {
-    // Run the direct Gemini endpoint call cleanly without Anthropic configuration pollution
     const aiReply = await callGemini(systemContext, messages);
     conversationHistory.push({ role: 'assistant', content: aiReply });
     hideTyping();
     addAIMessage(aiReply);
   } catch(e) {
     hideTyping();
-    addAIMessage('⚠️ Connection error. Please check your internet connection and API key.');
+    console.error('Gemini error:', e);
+    const errMsg = e.message || 'Unknown error';
+    if (errMsg.includes('API_KEY_INVALID') || errMsg.includes('400')) {
+      addAIMessage('⚠️ Invalid API key. Click \'Reset API Key\' and paste a fresh key from aistudio.google.com/apikey');
+    } else if (errMsg.includes('429')) {
+      addAIMessage('⚠️ Too many requests. Please wait a moment and try again.');
+    } else {
+      addAIMessage('⚠️ Gemini error: ' + errMsg);
+    }
   }
   document.getElementById('send-btn').disabled = false;
 }
 
 async function callGemini(systemCtx, messages) {
-  const history = messages.map(m => ({
+  // Only include valid history (skip the system turn we track separately)
+  const historyMsgs = messages.slice(0, -1); // all but the last (current) user msg
+  const currentMsg = messages[messages.length - 1];
+
+  const history = historyMsgs.map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: m.content }]
   }));
-  
-  // Package system directions and content array properly according to Gemini REST endpoints spec
+
+  // System context prepended to first user message
   const contents = [
-    { role: 'user', parts: [{ text: systemCtx }] }, 
-    { role: 'model', parts: [{ text: 'Understood! I am SmartWatt AI, your energy advisor with live ESP32 data.' }] }, 
-    ...history
+    { role: 'user', parts: [{ text: systemCtx + '\n\nUser: ' + currentMsg.content }] }
   ];
-  
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+
+  // Add history in pairs before the final message (skip if first message)
+  if (history.length > 0) {
+    contents.unshift({ role: 'user', parts: [{ text: systemCtx }] });
+    contents.splice(1, 0, { role: 'model', parts: [{ text: 'Understood! I am SmartWatt AI, ready to help with live ESP32 data.' }] });
+    for (const h of history) contents.push(h);
+    contents.push({ role: 'user', parts: [{ text: currentMsg.content }] });
+    contents.shift(); // remove duplicate systemCtx
+  }
+
+  const key = apiKey.trim();
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+
+  console.log('Calling Gemini with key length:', key.length);
+
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents, generationConfig: { maxOutputTokens: 600, temperature: 0.7 } })
+    body: JSON.stringify({
+      contents,
+      generationConfig: { maxOutputTokens: 600, temperature: 0.7 }
+    })
   });
-  
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || 'Gemini API error');
-  }
+
   const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.';
+  if (!res.ok) {
+    console.error('Gemini API error response:', data);
+    throw new Error(data.error?.message || `HTTP ${res.status}`);
+  }
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) {
+    console.error('Empty Gemini response:', data);
+    throw new Error('Empty response from Gemini');
+  }
+  return text;
 }
 
 // ── TTS ──
