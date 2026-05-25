@@ -834,18 +834,20 @@ CONTEXT:
 - Budget used: ${((totalEnergy/200)*100).toFixed(1)}%
 - Current power status: ${readings.power > 1800 ? 'HIGH ALERT' : readings.power > 1200 ? 'ABOVE AVERAGE' : 'NORMAL'}
 
-Respond in ${langNames[currentLang]}. Be concise, practical, and friendly. Use emojis sparingly. Give specific advice based on the live readings. If usage is high, say so. If someone asks about bills, use the exact live data above Simon.`;
+Respond in ${langNames[currentLang]}. Be concise, practical, and friendly. Use emojis sparingly. Give specific advice based on the live readings. If usage is high, say so. If someone asks about bills, use the exact live data above.`;
 
   conversationHistory.push({ role: 'user', content: text });
   const messages = conversationHistory.slice(-10);
 
   try {
-    // Run the direct Gemini endpoint call cleanly without Anthropic configuration pollution
+    // CONNECT DIRECTLY TO GEMINI (Anthropic fallback completely removed)
     const aiReply = await callGemini(systemContext, messages);
+
     conversationHistory.push({ role: 'assistant', content: aiReply });
     hideTyping();
     addAIMessage(aiReply);
   } catch(e) {
+    console.error(e); // Logs the specific error to the browser console
     hideTyping();
     addAIMessage('⚠️ Connection error. Please check your internet connection and API key.');
   }
