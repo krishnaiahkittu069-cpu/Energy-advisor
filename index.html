@@ -32,6 +32,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; overflow-x: hidden; }
 
+  /* ── Animated BG ── */
   body::before {
     content: ''; position: fixed; inset: 0; z-index: -1;
     background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,212,255,0.06) 0%, transparent 60%),
@@ -39,6 +40,7 @@
     pointer-events: none;
   }
 
+  /* ── Setup Overlay ── */
   #setup-overlay {
     position: fixed; inset: 0; z-index: 999;
     background: rgba(10,14,26,0.97);
@@ -72,6 +74,7 @@
   .setup-btn:active { transform: scale(0.98); }
   .setup-note { font-size: 12px; color: var(--text3); margin-top: 12px; text-align: center; line-height: 1.5; }
 
+  /* ── Layout ── */
   .app { display: grid; grid-template-columns: 280px 1fr; grid-template-rows: 64px 1fr; min-height: 100vh; }
   .topbar {
     grid-column: 1/-1;
@@ -107,12 +110,14 @@
   }
   .reset-key-btn:hover { border-color: var(--danger); color: var(--danger); }
 
+  /* ── Sidebar ── */
   .sidebar {
     background: var(--bg2); border-right: 1px solid var(--border);
     padding: 20px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
   }
   .section-title { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.2px; padding: 0 4px; margin-bottom: 4px; }
 
+  /* Metric Cards */
   .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .metric-card {
     background: var(--bg3); border: 1px solid var(--border);
@@ -131,6 +136,7 @@
   .metric-trend.down { color: var(--accent3); }
   .metric-wide { grid-column: 1/-1; }
 
+  /* Bill card */
   .bill-card {
     background: linear-gradient(135deg, var(--bg3) 0%, rgba(124,58,237,0.1) 100%);
     border: 1px solid rgba(124,58,237,0.3);
@@ -148,9 +154,11 @@
   }
   .pay-btn:hover { background: rgba(124,58,237,0.35); }
 
+  /* Chart mini */
   .chart-wrap { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
   .chart-container { position: relative; height: 100px; }
 
+  /* Quick insights */
   .insight-item {
     display: flex; align-items: flex-start; gap: 8px;
     padding: 8px; background: var(--bg3); border-radius: 8px;
@@ -158,6 +166,7 @@
   }
   .insight-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
 
+  /* ── Main ── */
   .main { display: flex; flex-direction: column; overflow: hidden; }
   .main-header {
     padding: 20px 24px 0; display: flex; align-items: center; justify-content: space-between;
@@ -171,6 +180,7 @@
     padding: 4px 10px; border-radius: 20px;
   }
 
+  /* ── Chat ── */
   .chat-area {
     flex: 1; display: flex; flex-direction: column;
     padding: 16px 24px; gap: 12px; overflow: hidden;
@@ -203,731 +213,16 @@
   .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
   @keyframes blink { 0%,80%,100%{opacity:0.2;} 40%{opacity:1;} }
 
+  /* TTS controls on message */
   .msg-tts { font-size: 11px; color: var(--text3); margin-top: 4px; display: flex; gap: 6px; align-items: center; }
   .tts-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 14px; padding: 2px 4px; border-radius: 4px; transition: color 0.2s; }
   .tts-btn:hover { color: var(--accent); }
 
+  /* Input */
   .chat-input-wrap {
     background: var(--bg2); border: 1px solid var(--border);
     border-radius: 14px; padding: 10px 12px;
     display: flex; align-items: flex-end; gap: 8px;
     transition: border-color 0.2s;
   }
-  .chat-input-wrap:focus-within { border-color: rgba(0,212,255,0.3); }
-  .chat-textarea {
-    flex: 1; background: transparent; border: none; outline: none;
-    color: var(--text); font-family: var(--font); font-size: 14px; resize: none;
-    max-height: 100px; line-height: 1.5;
-  }
-  .chat-textarea::placeholder { color: var(--text3); }
-  .chat-btns { display: flex; gap: 6px; align-items: center; }
-  .icon-btn {
-    width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
-    background: var(--bg3); color: var(--text2); cursor: pointer; display: flex;
-    align-items: center; justify-content: center; font-size: 16px; transition: all 0.2s; flex-shrink: 0;
-  }
-  .icon-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.08); }
-  .icon-btn.active { background: rgba(239,68,68,0.1); border-color: var(--danger); color: var(--danger); animation: micPulse 1s infinite; }
-  @keyframes micPulse { 0%,100%{box-shadow:none;} 50%{box-shadow:0 0 12px rgba(239,68,68,0.4);} }
-  .send-btn {
-    width: 36px; height: 36px; border-radius: 50%; border: none;
-    background: var(--accent); color: #0a0e1a; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; font-size: 16px;
-    transition: all 0.2s; flex-shrink: 0; font-weight: 700;
-  }
-  .send-btn:hover { opacity: 0.85; transform: scale(1.05); }
-  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-  .quick-prompts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
-  .qp {
-    padding: 5px 10px; background: var(--bg3); border: 1px solid var(--border);
-    color: var(--text2); font-size: 11px; border-radius: 20px; cursor: pointer;
-    transition: all 0.2s; font-family: var(--font);
-  }
-  .qp:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.05); }
-
-  .waveform { display: none; align-items: center; gap: 2px; height: 20px; }
-  .waveform.active { display: flex; }
-  .wave-bar { width: 3px; background: var(--danger); border-radius: 2px; animation: wave 0.8s infinite; }
-  .wave-bar:nth-child(1){height:6px;animation-delay:0s;}
-  .wave-bar:nth-child(2){height:14px;animation-delay:0.1s;}
-  .wave-bar:nth-child(3){height:10px;animation-delay:0.2s;}
-  .wave-bar:nth-child(4){height:18px;animation-delay:0.3s;}
-  .wave-bar:nth-child(5){height:8px;animation-delay:0.4s;}
-  @keyframes wave { 0%,100%{transform:scaleY(0.5);} 50%{transform:scaleY(1);} }
-
-  .alert-banner {
-    display: none; padding: 10px 16px; border-radius: 8px;
-    font-size: 13px; margin: 0 24px;
-    align-items: center; gap: 8px;
-  }
-  .alert-banner.show { display: flex; }
-  .alert-banner.warn { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #fbbf24; }
-  .alert-banner.danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; }
-
-  @media(max-width:768px) {
-    .app { grid-template-columns: 1fr; }
-    .sidebar { display: none; }
-    .main { grid-column: 1/-1; }
-  }
-
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; z-index: 200;
-    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-    align-items: center; justify-content: center;
-  }
-  .modal-overlay.show { display: flex; }
-  .modal-box {
-    background: var(--bg2); border: 1px solid rgba(16,185,129,0.3);
-    border-radius: 20px; padding: 32px; max-width: 360px; width: 90%; text-align: center;
-    box-shadow: 0 0 40px rgba(16,185,129,0.1); animation: fadeUp 0.3s;
-  }
-  .modal-icon { font-size: 48px; margin-bottom: 12px; }
-  .modal-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
-  .modal-body { font-size: 14px; color: var(--text2); line-height: 1.5; margin-bottom: 20px; }
-  .modal-confirm-btn {
-    width: 100%; padding: 12px; background: var(--accent3); border: none;
-    color: #0a0e1a; font-family: var(--font); font-size: 15px; font-weight: 600;
-    border-radius: 10px; cursor: pointer; margin-bottom: 8px;
-  }
-  .modal-cancel-btn {
-    width: 100%; padding: 10px; background: transparent; border: 1px solid var(--border);
-    color: var(--text2); font-family: var(--font); font-size: 13px;
-    border-radius: 10px; cursor: pointer;
-  }
-</style>
-</head>
-<body>
-
-<div id="setup-overlay">
-  <div class="setup-box">
-    <div class="setup-logo">⚡ Smart<span>Watt</span></div>
-    <div class="setup-subtitle">Your IoT Energy Advisor. Enter your Gemini API key to activate the AI assistant. Your key stays in your browser only.</div>
-    <div class="setup-label">Gemini API Key</div>
-    <input type="password" id="api-key-input" class="setup-input" placeholder="AIzaSy..." autocomplete="off">
-    <button class="setup-btn" onclick="saveKey()">Activate AI Advisor →</button>
-    <div class="setup-note">🔒 Stored locally in your browser. Never sent to any server except Gemini's API. <br>No scanner, no exposure.</div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="pay-modal">
-  <div class="modal-box">
-    <div class="modal-icon">💳</div>
-    <div class="modal-title">Confirm Payment</div>
-    <div class="modal-body" id="pay-modal-body">Pay ₹0 for this billing cycle? This will reset your monthly usage counter.</div>
-    <button class="modal-confirm-btn" onclick="confirmPayment()">✓ Confirm Payment & Reset</button>
-    <button class="modal-cancel-btn" onclick="closePayModal()">Cancel</button>
-  </div>
-</div>
-
-<div class="app">
-  <div class="topbar">
-    <div class="logo">⚡ Smart<span>Watt</span></div>
-    <div class="topbar-right">
-      <div class="realtime-badge" id="conn-badge">
-        <div class="conn-dot"></div>
-        <span id="conn-text">Connecting…</span>
-      </div>
-      <select class="lang-select" id="lang-select" onchange="changeLang(this.value)">
-        <option value="en">🇬🇧 English</option>
-        <option value="te">🇮🇳 Telugu</option>
-        <option value="hi">🇮🇳 Hindi</option>
-        <option value="ta">🇮🇳 Tamil</option>
-        <option value="mr">🇮🇳 Marathi</option>
-        <option value="kn">🇮🇳 Kannada</option>
-      </select>
-      <button class="reset-key-btn" onclick="resetKey()">⚙ Reset API Key</button>
-    </div>
-  </div>
-
-  <div class="sidebar">
-    <div>
-      <div class="section-title">Live Readings</div>
-      <div class="metric-grid">
-        <div class="metric-card" style="--mc-color:#00d4ff">
-          <div class="metric-label">Power</div>
-          <div class="metric-val" id="m-power">0<span>W</span></div>
-          <div class="metric-trend" id="m-power-trend">—</div>
-        </div>
-        <div class="metric-card" style="--mc-color:#f59e0b">
-          <div class="metric-label">Voltage</div>
-          <div class="metric-val" id="m-voltage">0<span>V</span></div>
-          <div class="metric-trend" id="m-volt-trend">—</div>
-        </div>
-        <div class="metric-card" style="--mc-color:#10b981">
-          <div class="metric-label">Current</div>
-          <div class="metric-val" id="m-current">0<span>A</span></div>
-          <div class="metric-trend"></div>
-        </div>
-        <div class="metric-card" style="--mc-color:#7c3aed">
-          <div class="metric-label">Frequency</div>
-          <div class="metric-val" id="m-freq">50.0<span>Hz</span></div>
-          <div class="metric-trend"></div>
-        </div>
-        <div class="metric-card metric-wide" style="--mc-color:#f59e0b">
-          <div class="metric-label">Total Energy (Month)</div>
-          <div class="metric-val" id="m-energy">0.00<span>kWh</span></div>
-          <div class="metric-trend" id="m-energy-trend">—</div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div class="section-title">Monthly Bill</div>
-      <div class="bill-card">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start">
-          <div>
-            <div style="font-size:11px;color:var(--text3);margin-bottom:4px" id="bill-month-label">May 2025</div>
-            <div class="bill-amount"><span class="currency">₹</span><span id="bill-amount">0.00</span></div>
-            <div class="bill-sub" id="bill-sub">0.00 kWh × ₹6.50/unit</div>
-          </div>
-          <div id="bill-status-badge" style="font-size:11px;padding:3px 8px;border-radius:20px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#fbbf24">Pending</div>
-        </div>
-        <div class="bill-bar"><div class="bill-bar-fill" id="bill-bar-fill" style="width:0%"></div></div>
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:8px">
-          <span>0</span><span id="bill-bar-label">Budget: 200 kWh</span><span>200 kWh</span>
-        </div>
-        <button class="pay-btn" onclick="openPayModal()">💳 Pay & Reset Meter</button>
-      </div>
-    </div>
-
-    <div>
-      <div class="section-title">24h Trend</div>
-      <div class="chart-wrap">
-        <div class="chart-container">
-          <canvas id="trendChart" role="img" aria-label="24 hour power consumption trend">Power trend data.</canvas>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div class="section-title">AI Insights</div>
-      <div style="display:flex;flex-direction:column;gap:6px" id="insights-list">
-        <div class="insight-item"><span class="insight-icon">💡</span><span id="ins1">Loading insights…</span></div>
-        <div class="insight-item"><span class="insight-icon">📊</span><span id="ins2">Analyzing usage pattern…</span></div>
-        <div class="insight-item"><span class="insight-icon">⚠️</span><span id="ins3">Checking anomalies…</span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="main">
-    <div class="main-header">
-      <div>
-        <div class="main-title">AI Energy Advisor <span id="model-tag">● Gemini Active</span></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div style="font-size:12px;color:var(--text3)" id="esp-status-text">ESP32 ● Live</div>
-      </div>
-    </div>
-
-    <div class="alert-banner" id="alert-banner">
-      <span id="alert-icon">⚠️</span>
-      <span id="alert-text">High power usage detected!</span>
-    </div>
-
-    <div class="chat-area">
-      <div class="messages" id="messages"></div>
-
-      <div class="quick-prompts" id="quick-prompts"></div>
-
-      <div class="chat-input-wrap">
-        <div class="waveform" id="waveform">
-          <div class="wave-bar"></div><div class="wave-bar"></div>
-          <div class="wave-bar"></div><div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-        </div>
-        <textarea class="chat-textarea" id="chat-input" rows="1" placeholder="Ask about your energy usage…"></textarea>
-        <div class="chat-btns">
-          <button class="icon-btn" id="mic-btn" onclick="toggleMic()" title="Voice input">🎤</button>
-          <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Send">➤</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-// ── State ──
-let apiKey = '';
-let currentLang = 'en';
-let isRecording = false;
-let recognition = null;
-let currentTTS = null;
-let totalEnergy = 0; 
-let readings = { power: 0, voltage: 230, current: 0, freq: 50 };
-let prevPower = 0;
-let history24h = Array(24).fill(0);
-let monthStart = new Date(); monthStart.setDate(1);
-let isPaid = false;
-const RATE = 6.50; 
-let trendChart = null;
-let conversationHistory = [];
-let lastAlertLevel = 0;
-
-const LANG = {
-  en: {
-    placeholder: 'Ask about your energy usage…',
-    welcome: `Hello! 👋 I'm your SmartWatt AI Energy Advisor powered by Gemini. I have real-time access to your ESP32 energy meter. Ask me anything about your power usage, bills, saving tips, or anomalies!`,
-    quickPrompts: ['What is my current usage?', 'How can I save electricity?', 'Am I using too much power?', 'Predict my monthly bill', 'Show me tips to reduce cost', 'Is my usage normal?'],
-    ins: ['Monitor usage patterns daily', 'Peak hours: 6pm–10pm', 'Check for idle devices'],
-    connOk: '⚡ ESP32 Connected',
-    connFail: '⚠ Connection Error'
-  },
-  te: {
-    placeholder: 'మీ శక్తి వినియోగం గురించి అడగండి…',
-    welcome: `నమస్కారం! 👋 నేను మీ SmartWatt AI ఎనర్జీ సಲహాదారుడిని. మీ ESP32 మీటర్ నుండి నేరుగా డేటా పొందుతున్నాను. విద్యుత్ వినియోగం, బిల్లులు, ఆదా చిట్కాలు అన్నీ అడగవచ్చు!`,
-    quickPrompts: ['ప్రస్తుత వినియోగం ఎంత?', 'విద్యుత్ ఆదా చేయడం ఎలా?', 'నా బిల్లు అంచనా వేయండి', 'అసాधారణ వినియోగం ఉందా?'],
-    ins: ['రోజువారీ వినియోగం పర్యవేక్షించండి', 'పీక్ సమయం: సాయంత్రం 6-10', 'నిష్క్రియ పరికరాలు తనిಖీ చేయండి'],
-    connOk: '⚡ ESP32 అనుసంధానమైంది',
-    connFail: '⚠ కనెక్షన్ లోపం'
-  },
-  hi: {
-    placeholder: 'अपनी ऊर्जा खपत के बारे में पूछें…',
-    welcome: `नमस्ते! 👋 मैं आपका SmartWatt AI ऊर्जा सलाहकार हूँ। ESP32 मीटर से सीधे डेटा प्राप्त कर रहा हूँ। बिजली खपत, बिल, बचत के टिप्स — सब पूछ सकते हैं!`,
-    quickPrompts: ['अभी कितनी बिजली उपयोग हो रही है?', 'बिजली कैसे बचाएं?', 'मासिक बिल का अनुमान?', 'क्या कोई असामान्य उपयोग है?'],
-    ins: ['दैनिक उपयोग की निगरानी करें', 'पीक समय: शाम 6-10 बजे', 'निष्क्रिय उपकरण जाँचें'],
-    connOk: '⚡ ESP32 जुड़ा है',
-    connFail: '⚠ कनेक्शन त्रुटि'
-  },
-  ta: {
-    placeholder: 'உங்கள் மின்சாரப் பயன்பாட்டைப் பற்றி கேளுங்கள்…',
-    welcome: `வணக்கம்! 👋 நான் உங்கள் SmartWatt AI ஆற்றல் ஆலோசகர். ESP32 மீட்டரிலிருந்து நேரடி தரவை பெறுகிறேன். மின்சாரப் பயன்பாடு, கட்டணங்கள், சேமிப்பு குறிப்புகள் எல்லாவற்றையும் கேளுங்கள்!`,
-    quickPrompts: ['தற்போதைய பயன்பாடு எவ்வளவு?', 'மின்சாரம் எப்படி சேமிப்பது?', 'மாதாந்திர கட்டணம் என்ன?', 'அசாதாரண பயன்பாடு உள்ளதா?'],
-    ins: ['தினசரி பயன்பாட்டை கண்காணிக்கவும்', '替க் நேரம்: மாலை 6-10', 'செயலற்ற சாதனங்களை சரிபார்க்கவும்'],
-    connOk: '⚡ ESP32 இணைக்கப்பட்டது',
-    connFail: '⚠ இணைப்பு பிழை'
-  },
-  mr: {
-    placeholder: 'तुमच्या ऊर्जा वापराबद्दल विचारा…',
-    welcome: `नमस्कार! 👋 मी तुमचा SmartWatt AI ऊर्जा सल्लागार आहे. ESP32 मीटरकडून थेट डेटा मिळवत आहे. वीज वापर, बिले, बचतीच्या टिप्स — सर्व काही विचारा!`,
-    quickPrompts: ['आत्ता किती वीज वापरतोय?', 'वीज कशी वाचवायची?', 'महिन्याचे बिल किती येईल?', 'असामान्य वापर आहे का?'],
-    ins: ['दैनंदिन वापर तपासा', 'पीक वेळ: संध्याकाळी 6-10', 'निष्क्रिय उपकरणे तपासा'],
-    connOk: '⚡ ESP32 जोडले आहे',
-    connFail: '⚠ कणेक्शन त्रुटी'
-  },
-  kn: {
-    placeholder: 'ನಿಮ್ಮ ಶಕ್ತಿ ಬಳಕೆಯ ಬಗ್ಗೆ ಕೇಳಿ…',
-    welcome: `ನಮಸ್ಕಾರ! 👋 ನಾನು ನಿಮ್ಮ SmartWatt AI ಶಕ್ತಿ ಸಲಹೆಗಾರ. ESP32 ಮೀಟರ್‌ನಿಂದ ನೇರ ಡೇಟಾ ಪಡೆಯುತ್ತಿದ್ದೇನೆ. ವಿದ್ಯುತ್ ಬಳಕೆ, ಬಿಲ್, ಉಳಿತಾಯ ಸಲಹೆಗಳು — ಎಲ್ಲವನ್ನೂ ಕೇಳಿ!`,
-    quickPrompts: ['ಈಗ ಎಷ್ಟು ವಿದ್ಯುತ್ ಬಳಕೆ?', 'ವಿದ್ಯುತ್ ಉಳಿಸುವುದು ಹೇಗೆ?', 'ಮಾಸಿಕ ಬಿಲ್ ಎಷ್ಟಾಗುತ್ತದೆ?', 'ಅಸಾಮಾನ್ಯ ಬಳಕೆ ಇದೆಯಾ?'],
-    ins: ['ದೈನಂದಿನ ಬಳಕೆ ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಿ', 'ಪೀಕ್ ಸಮಯ: ಸಂಜೆ 6-10', 'ನಿಷ್ಕ್ರಿಯ ಸಾಧನಗಳನ್ನು ಪರಿಶೀಲಿಸಿ'],
-    connOk: '⚡ ESP32 ಸಂಪರ್ಕಿಸಲಾಗಿದೆ',
-    connFail: '⚠ ಸಂಪರ್ಕ ದೋಷ'
-  }
-};
-
-// ── Init ──
-window.onload = () => {
-  const saved = localStorage.getItem('sw_api_key');
-  if (saved) { apiKey = saved; hidSetup(); initApp(); }
-  initChart();
-};
-
-function saveKey() {
-  const k = document.getElementById('api-key-input').value.trim();
-  if (!k.startsWith('AIza') || k.length < 20) { alert('Please enter a valid Gemini API key (starts with AIzaSy…)'); return; }
-  apiKey = k;
-  localStorage.setItem('sw_api_key', k);
-  hidSetup();
-  initApp();
-}
-function hidSetup() { document.getElementById('setup-overlay').style.display = 'none'; }
-function resetKey() {
-  if (!confirm('Reset API key? You will need to enter it again.')) return;
-  localStorage.removeItem('sw_api_key');
-  apiKey = '';
-  conversationHistory = [];
-  document.getElementById('messages').innerHTML = '';
-  document.getElementById('setup-overlay').style.display = 'flex';
-}
-
-function initApp() {
-  changeLang(currentLang);
-  startSimulation();
-  setTimeout(() => {
-    setConnStatus(true);
-    updateInsights();
-  }, 1200);
-}
-
-// ── Language ──
-function changeLang(lang) {
-  currentLang = lang;
-  document.getElementById('lang-select').value = lang;
-  const l = LANG[lang];
-  document.getElementById('chat-input').placeholder = l.placeholder;
-  document.getElementById('ins1').textContent = l.ins[0];
-  document.getElementById('ins2').textContent = l.ins[1];
-  document.getElementById('ins3').textContent = l.ins[2];
-  renderQuickPrompts();
-  
-  const msgs = document.getElementById('messages');
-  if (msgs.children.length === 0) addAIMessage(l.welcome);
-}
-
-function renderQuickPrompts() {
-  const l = LANG[currentLang];
-  const wrap = document.getElementById('quick-prompts');
-  wrap.innerHTML = l.quickPrompts.map(q =>
-    `<button class="qp" onclick="useQuickPrompt('${q.replace(/'/g,"&#39;")}')">💬 ${q}</button>`
-  ).join('');
-}
-function useQuickPrompt(q) {
-  document.getElementById('chat-input').value = q;
-  sendMessage();
-}
-
-// ── Connection ──
-function setConnStatus(ok) {
-  const badge = document.getElementById('conn-badge');
-  const text = document.getElementById('conn-text');
-  const l = LANG[currentLang];
-  badge.className = 'conn-badge ' + (ok ? 'connected' : 'disconnected');
-  text.textContent = ok ? l.connOk : l.connFail;
-  document.getElementById('esp-status-text').textContent = ok ? 'ESP32 ● Live' : 'ESP32 ● Offline';
-  if (!ok) showAlert('danger', '⚠️', 'ESP32 connection lost. Showing last known data.');
-  else hideAlert();
-}
-
-function showAlert(type, icon, text) {
-  const b = document.getElementById('alert-banner');
-  document.getElementById('alert-icon').textContent = icon;
-  document.getElementById('alert-text').textContent = text;
-  b.className = 'alert-banner show ' + type;
-}
-function hideAlert() { document.getElementById('alert-banner').className = 'alert-banner'; }
-
-// ── ESP32 Simulation ──
-function startSimulation() {
-  let t = 0;
-  const energyInterval = setInterval(() => {
-    if (!apiKey) return;
-    t++;
-    const hour = new Date().getHours();
-    const tod = Math.sin((hour - 6) / 24 * Math.PI * 2) * 400 + 600;
-    const noise = (Math.random() - 0.5) * 120;
-    const spike = Math.random() < 0.02 ? Math.random() * 800 : 0;
-    const rawPower = Math.max(50, tod + noise + spike);
-    readings.power = Math.round(rawPower);
-    readings.voltage = +(230 + (Math.random() - 0.5) * 4).toFixed(1);
-    readings.current = +(readings.power / readings.voltage).toFixed(2);
-    readings.freq = +(50 + (Math.random() - 0.5) * 0.3).toFixed(1);
-
-    totalEnergy += (readings.power * 2) / 3600000;
-
-    const slot = Math.floor(t / 1800) % 24;
-    history24h[slot] = Math.round(readings.power);
-    updateChart();
-
-    updateMetrics();
-    updateBill();
-    checkAlerts();
-    prevPower = readings.power;
-  }, 2000);
-}
-
-function updateMetrics() {
-  const { power, voltage, current, freq } = readings;
-  document.getElementById('m-power').innerHTML = `${power}<span>W</span>`;
-  document.getElementById('m-voltage').innerHTML = `${voltage}<span>V</span>`;
-  document.getElementById('m-current').innerHTML = `${current}<span>A</span>`;
-  document.getElementById('m-freq').innerHTML = `${freq}<span>Hz</span>`;
-  document.getElementById('m-energy').innerHTML = `${totalEnergy.toFixed(3)}<span>kWh</span>`;
-
-  const diff = power - prevPower;
-  const ptrend = document.getElementById('m-power-trend');
-  ptrend.textContent = diff > 10 ? `▲ +${diff}W` : diff < -10 ? `▼ ${diff}W` : '~ Stable';
-  ptrend.className = 'metric-trend ' + (diff > 10 ? 'up' : diff < -10 ? 'down' : '');
-
-  const etend = document.getElementById('m-energy-trend');
-  etend.textContent = `Rate: ${(power/1000).toFixed(3)} kW now`;
-  etend.className = 'metric-trend';
-}
-
-function updateBill() {
-  const amount = (totalEnergy * RATE).toFixed(2);
-  document.getElementById('bill-amount').textContent = amount;
-  document.getElementById('bill-sub').textContent = `${totalEnergy.toFixed(3)} kWh × ₹${RATE}/unit`;
-  const pct = Math.min(100, (totalEnergy / 200) * 100);
-  document.getElementById('bill-bar-fill').style.width = pct + '%';
-  const d = new Date();
-  document.getElementById('bill-month-label').textContent =
-    d.toLocaleString('default', { month: 'long' }) + ' ' + d.getFullYear();
-}
-
-function checkAlerts() {
-  if (readings.power > 1800 && lastAlertLevel < 2) {
-    showAlert('danger', '🔴', `High power alert: ${readings.power}W detected! Check heavy appliances.`);
-    lastAlertLevel = 2;
-  } else if (readings.power > 1200 && lastAlertLevel < 1) {
-    showAlert('warn', '⚠️', `Above-average power usage: ${readings.power}W. Peak hours may cost more.`);
-    lastAlertLevel = 1;
-  } else if (readings.power < 1200) {
-    if (lastAlertLevel > 0) hideAlert();
-    lastAlertLevel = 0;
-  }
-}
-
-function updateInsights() {
-  setTimeout(() => {
-    document.getElementById('ins1').textContent = 'Peak: 6–10 PM costs most per unit';
-    document.getElementById('ins2').textContent = `Today avg: ${Math.round(readings.power)}W — moderate`;
-    document.getElementById('ins3').textContent = totalEnergy > 100 ? '⚠ 50% monthly budget used' : '✅ Usage within budget';
-  }, 1500);
-}
-
-// ── Chart ──
-function initChart() {
-  const ctx = document.getElementById('trendChart').getContext('2d');
-  const labels = Array.from({length:24},(_,i)=>`${i}h`);
-  trendChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        data: history24h, fill: true,
-        borderColor: '#00d4ff', backgroundColor: 'rgba(0,212,255,0.08)',
-        borderWidth: 1.5, pointRadius: 0, tension: 0.4
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { display: false },
-        y: { display: false, min: 0 }
-      },
-      animation: { duration: 300 }
-    }
-  });
-}
-function updateChart() {
-  if (!trendChart) return;
-  trendChart.data.datasets[0].data = [...history24h];
-  trendChart.update('none');
-}
-
-// ── Payment ──
-function openPayModal() {
-  const amt = (totalEnergy * RATE).toFixed(2);
-  document.getElementById('pay-modal-body').textContent =
-    `Pay ₹${amt} for ${totalEnergy.toFixed(3)} kWh this billing cycle? This will reset your monthly usage counter.`;
-  document.getElementById('pay-modal').classList.add('show');
-}
-function closePayModal() { document.getElementById('pay-modal').classList.remove('show'); }
-function confirmPayment() {
-  totalEnergy = 0;
-  lastAlertLevel = 0;
-  hideAlert();
-  closePayModal();
-  document.getElementById('bill-amount').textContent = '0.00';
-  document.getElementById('bill-bar-fill').style.width = '0%';
-  const badge = document.getElementById('bill-status-badge');
-  badge.textContent = 'Paid ✓';
-  badge.style.background = 'rgba(16,185,129,0.1)';
-  badge.style.borderColor = 'rgba(16,185,129,0.3)';
-  badge.style.color = '#34d399';
-  addAIMessage('✅ Payment confirmed! Your meter has been reset. Starting fresh billing cycle. Great job keeping track of your energy usage!');
-  setTimeout(() => {
-    badge.textContent = 'Pending';
-    badge.style.background = '';
-    badge.style.borderColor = '';
-    badge.style.color = '';
-  }, 60000);
-}
-
-// ── Chat ──
-function addAIMessage(text) {
-  const msgs = document.getElementById('messages');
-  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  const id = 'msg-' + Date.now();
-  const div = document.createElement('div');
-  div.className = 'msg ai';
-  div.innerHTML = `
-    <div class="msg-avatar">AI</div>
-    <div>
-      <div class="msg-bubble" id="${id}">${text.replace(/\n/g,'<br>')}</div>
-      <div class="msg-tts">
-        <span style="color:var(--text3)">${time}</span>
-        <button class="tts-btn" onclick="speakText('${id}')" title="Read aloud">🔊</button>
-        <button class="tts-btn" onclick="stopTTS()" title="Stop">⏹</button>
-      </div>
-    </div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function addUserMessage(text) {
-  const msgs = document.getElementById('messages');
-  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  const div = document.createElement('div');
-  div.className = 'msg user';
-  div.innerHTML = `
-    <div class="msg-avatar">U</div>
-    <div>
-      <div class="msg-bubble">${text}</div>
-      <div class="msg-time">${time}</div>
-    </div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function showTyping() {
-  const msgs = document.getElementById('messages');
-  const div = document.createElement('div');
-  div.className = 'msg ai'; div.id = 'typing-indicator';
-  div.innerHTML = `<div class="msg-avatar">AI</div><div class="msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-function hideTyping() { const t = document.getElementById('typing-indicator'); if(t) t.remove(); }
-
-async function sendMessage() {
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
-  if (!text || !apiKey) return;
-  input.value = '';
-  input.style.height = 'auto';
-  addUserMessage(text);
-  document.getElementById('send-btn').disabled = true;
-  showTyping();
-
-  const langNames = {en:'English',te:'Telugu',hi:'Hindi',ta:'Tamil',mr:'Marathi',kn:'Kannada'};
-  const systemContext = `You are SmartWatt AI — a friendly, expert IoT energy advisor for a smart home electricity meter powered by an ESP32 microcontroller.
-
-CURRENT LIVE READINGS FROM ESP32:
-- Power: ${readings.power}W
-- Voltage: ${readings.voltage}V  
-- Current: ${readings.current}A
-- Frequency: ${readings.freq}Hz
-- Total Energy This Month: ${totalEnergy.toFixed(3)} kWh
-- Estimated Bill: ₹${(totalEnergy * RATE).toFixed(2)} (Rate: ₹${RATE}/kWh)
-- Time of day: ${new Date().toLocaleTimeString()}
-
-CONTEXT:
-- Meter installed in India (using ₹ and Indian electricity rates)
-- Monthly budget: 200 kWh
-- Budget used: ${((totalEnergy/200)*100).toFixed(1)}%
-- Current power status: ${readings.power > 1800 ? 'HIGH ALERT' : readings.power > 1200 ? 'ABOVE AVERAGE' : 'NORMAL'}
-
-Respond in ${langNames[currentLang]}. Be concise, practical, and friendly. Use emojis sparingly. Give specific advice based on the live readings. If usage is high, say so. If someone asks about bills, use the exact live data above.`;
-
-  conversationHistory.push({ role: 'user', content: text });
-  const messages = conversationHistory.slice(-10);
-
-  try {
-    // Route directly into the Gemini handler 
-    const aiReply = await callGemini(systemContext, messages);
-
-    conversationHistory.push({ role: 'assistant', content: aiReply });
-    hideTyping();
-    addAIMessage(aiReply);
-  } catch(e) {
-    hideTyping();
-    console.error(e);
-    addAIMessage('⚠️ Connection error. Please check your internet connection and API key.');
-  }
-  document.getElementById('send-btn').disabled = false;
-}
-
-async function callGemini(systemCtx, messages) {
-  const history = messages.map(m => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.content }]
-  }));
-  const contents = [{ role: 'user', parts: [{ text: systemCtx }] }, { role: 'model', parts: [{ text: 'Understood! I am SmartWatt AI, your energy advisor with live ESP32 data.' }] }, ...history];
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents, generationConfig: { maxOutputTokens: 600, temperature: 0.7 } })
-  });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || 'Gemini API error');
-  }
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.';
-}
-
-// ── TTS ──
-function speakText(msgId) {
-  stopTTS();
-  const el = document.getElementById(msgId);
-  if (!el) return;
-  const text = el.innerText;
-  const langMap = { en:'en-IN', te:'te-IN', hi:'hi-IN', ta:'ta-IN', mr:'mr-IN', kn:'kn-IN' };
-  const utt = new SpeechSynthesisUtterance(text);
-  utt.lang = langMap[currentLang] || 'en-IN';
-  utt.rate = 0.95; utt.pitch = 1;
-  const voices = window.speechSynthesis.getVoices();
-  const match = voices.find(v => v.lang.startsWith(langMap[currentLang]?.split('-')[0]));
-  if (match) utt.voice = match;
-  currentTTS = utt;
-  window.speechSynthesis.speak(utt);
-}
-function stopTTS() {
-  window.speechSynthesis.cancel();
-  currentTTS = null;
-}
-
-// ── Voice Input ──
-function toggleMic() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    alert('Voice input not supported in this browser. Please use Chrome.'); return;
-  }
-  if (isRecording) { stopMic(); return; }
-  startMic();
-}
-
-function startMic() {
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRec();
-  const langMap = { en:'en-IN', te:'te-IN', hi:'hi-IN', ta:'ta-IN', mr:'mr-IN', kn:'kn-IN' };
-  recognition.lang = langMap[currentLang] || 'en-IN';
-  recognition.continuous = false; recognition.interimResults = true;
-  recognition.onstart = () => {
-    isRecording = true;
-    document.getElementById('mic-btn').classList.add('active');
-    document.getElementById('waveform').classList.add('active');
-    document.getElementById('chat-input').placeholder = '🎤 Listening…';
-  };
-  recognition.onresult = (e) => {
-    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
-    document.getElementById('chat-input').value = transcript;
-  };
-  recognition.onend = () => {
-    stopMic();
-    const val = document.getElementById('chat-input').value.trim();
-    if (val) sendMessage();
-  };
-  recognition.onerror = (e) => {
-    stopMic();
-    if (e.error !== 'no-speech') addAIMessage(`🎤 Mic error: ${e.error}. Please try again.`);
-  };
-  recognition.start();
-}
-function stopMic() {
-  isRecording = false;
-  if (recognition) recognition.stop();
-  document.getElementById('mic-btn').classList.remove('active');
-  document.getElementById('waveform').classList.remove('active');
-  document.getElementById('chat-input').placeholder = LANG[currentLang].placeholder;
-}
-
-// ── Auto-resize textarea ──
-document.addEventListener('DOMContentLoaded', () => {
-  const ta = document.getElementById('chat-input');
-  ta.addEventListener('input', () => {
-    ta.style.height = 'auto';
-    ta.style.height = Math.min(ta.scrollHeight, 100) + 'px';
-  });
-  ta.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-  });
-});
-</script>
-</body>
-</html>
+  .chat-input-wrap:focus-within { border-color: rgba(0,212
