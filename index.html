@@ -1,56 +1,880 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Offline Ollama Voice Assistant</title>
-  <style>
-    /* ... (rest of the styles remain the same) */
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>⚡ AI Energy Advisor Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #020917;
+  --surface: rgba(8,20,45,0.9);
+  --surface2: rgba(4,12,30,0.95);
+  --border: rgba(0,212,255,0.12);
+  --border-active: rgba(0,212,255,0.4);
+  --cyan: #00d4ff;
+  --cyan2: #00a8cc;
+  --green: #00ff88;
+  --pink: #ff0080;
+  --orange: #ff6600;
+  --yellow: #ffcc00;
+  --text: #e0f0ff;
+  --muted: #4a7090;
+  --danger: #ff3366;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Exo 2',sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  color:var(--text);
+  overflow-x:hidden;
+  cursor:default;
+}
+
+/* Animated starfield background */
+.stars{position:fixed;inset:0;z-index:0;overflow:hidden;}
+.star{position:absolute;border-radius:50%;background:white;animation:twinkle var(--d) infinite ease-in-out;}
+@keyframes twinkle{0%,100%{opacity:0.1;transform:scale(1);}50%{opacity:0.8;transform:scale(1.5);}}
+
+/* Animated circuit lines */
+.circuit{position:fixed;inset:0;z-index:0;opacity:0.04;}
+.circuit svg{width:100%;height:100%;}
+
+/* Glowing orbs */
+.orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:0.12;z-index:0;animation:orbDrift 12s ease-in-out infinite;}
+.orb1{width:500px;height:500px;background:radial-gradient(#00d4ff,#0040ff);top:-150px;right:-100px;}
+.orb2{width:400px;height:400px;background:radial-gradient(#ff0080,#7700ff);bottom:-100px;left:-100px;animation-delay:-6s;}
+.orb3{width:300px;height:300px;background:radial-gradient(#00ff88,#00aa44);top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:-3s;}
+@keyframes orbDrift{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-25px) scale(1.05);}}
+
+/* Scan line effect */
+body::after{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,212,255,0.01) 2px,rgba(0,212,255,0.01) 4px);
+  z-index:1000;
+  pointer-events:none;
+}
+
+.app{position:relative;z-index:2;max-width:860px;margin:0 auto;padding:20px 16px 60px;}
+
+/* ═══ HEADER ═══ */
+.header{text-align:center;padding:30px 0 25px;animation:slideDown 0.8s cubic-bezier(0.16,1,0.3,1) both;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+
+.header-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,212,255,0.06);
+  border:1px solid rgba(0,212,255,0.2);
+  color:var(--cyan);padding:5px 16px;border-radius:100px;
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;
+}
+.eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+.header h1{
+  font-family:'Orbitron',monospace;
+  font-size:clamp(22px,5vw,46px);
+  font-weight:900;
+  letter-spacing:3px;
+  background:linear-gradient(135deg,#fff 0%,var(--cyan) 40%,var(--green) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1.15;margin-bottom:10px;
+  text-shadow:none;
+}
+.header-sub{color:var(--muted);font-size:14px;letter-spacing:2px;text-transform:uppercase;}
+
+/* Power meter animation */
+.power-meter{
+  display:flex;align-items:center;justify-content:center;gap:4px;margin-top:14px;
+}
+.power-bar{
+  width:4px;border-radius:2px;background:var(--cyan);opacity:0.3;
+  animation:powerAnim 1.2s ease-in-out infinite;
+}
+.power-bar:nth-child(1){height:8px;animation-delay:0s;}
+.power-bar:nth-child(2){height:16px;animation-delay:0.1s;}
+.power-bar:nth-child(3){height:24px;animation-delay:0.2s;}
+.power-bar:nth-child(4){height:32px;animation-delay:0.3s;}
+.power-bar:nth-child(5){height:24px;animation-delay:0.4s;}
+.power-bar:nth-child(6){height:16px;animation-delay:0.5s;}
+.power-bar:nth-child(7){height:8px;animation-delay:0.6s;}
+@keyframes powerAnim{0%,100%{opacity:0.2;transform:scaleY(0.5);}50%{opacity:1;transform:scaleY(1);}}
+
+/* ═══ STATUS BAR ═══ */
+.status-bar{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  background:rgba(0,212,255,0.04);
+  border:1px solid var(--border);
+  border-radius:14px;padding:10px 18px;margin-bottom:16px;font-size:12px;
+  animation:fadeUp 0.6s ease 0.2s both;
+}
+.status-left{display:flex;align-items:center;gap:8px;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 2s infinite;}
+.status-dot.error{background:var(--danger);box-shadow:0 0 10px var(--danger);}
+#statusText{color:var(--muted);letter-spacing:1px;}
+.ip-display{font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);letter-spacing:1px;}
+
+/* ═══ QUICK TIPS TICKER ═══ */
+.ticker-wrap{
+  overflow:hidden;background:rgba(0,212,255,0.03);border:1px solid var(--border);
+  border-radius:10px;padding:8px 0;margin-bottom:16px;
+  animation:fadeUp 0.6s ease 0.3s both;
+}
+.ticker-inner{display:flex;white-space:nowrap;animation:tickerScroll 40s linear infinite;}
+.ticker-item{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:0 30px;font-size:13px;color:var(--muted);
+}
+.ticker-item span{color:var(--cyan);}
+@keyframes tickerScroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* ═══ MAIN CARD ═══ */
+.card{
+  background:var(--surface);
+  backdrop-filter:blur(24px);
+  border:1px solid var(--border);
+  border-radius:24px;padding:24px;
+  box-shadow:0 0 60px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.04);
+  animation:fadeUp 0.6s ease 0.35s both;
+  margin-bottom:16px;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ═══ CONFIG ROW ═══ */
+.config-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center;}
+
+.field-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:140px;}
+.field-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);opacity:0.7;}
+
+select,input[type=text]{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:10px 14px;border-radius:10px;
+  font-family:'Exo 2',sans-serif;font-size:14px;font-weight:500;
+  transition:border-color 0.2s,box-shadow 0.2s;
+  -webkit-appearance:none;appearance:none;
+}
+select:focus,input[type=text]:focus{outline:none;border-color:var(--border-active);box-shadow:0 0 0 3px rgba(0,212,255,0.08);}
+.select-wrap{position:relative;}
+.select-wrap::after{content:'▾';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--cyan);pointer-events:none;font-size:12px;}
+.select-wrap select{width:100%;padding-right:30px;}
+
+.model-tag{
+  background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);
+  color:var(--cyan);padding:10px 14px;border-radius:10px;
+  font-family:'Orbitron',monospace;font-size:12px;letter-spacing:1px;white-space:nowrap;
+  align-self:flex-end;
+}
+
+/* ═══ INPUT AREA ═══ */
+.input-section{margin-bottom:16px;}
+.input-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.char-count{margin-left:auto;color:var(--muted);font-size:11px;font-family:'Orbitron',monospace;}
+
+textarea{
+  width:100%;min-height:120px;resize:vertical;
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);padding:14px 16px;border-radius:14px;
+  font-family:'Exo 2',sans-serif;font-size:15px;font-weight:400;line-height:1.7;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+textarea:focus{outline:none;border-color:var(--border-active);box-shadow:0 0 0 3px rgba(0,212,255,0.08);}
+textarea::placeholder{color:var(--muted);}
+
+/* ═══ QUICK QUESTIONS ═══ */
+.quick-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.quick-btns{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;}
+.quick-btn{
+  background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.15);
+  color:var(--muted);padding:6px 12px;border-radius:20px;font-size:12px;
+  font-family:'Exo 2',sans-serif;cursor:pointer;transition:all 0.2s;white-space:nowrap;
+}
+.quick-btn:hover{background:rgba(0,212,255,0.12);border-color:var(--border-active);color:var(--cyan);transform:translateY(-1px);}
+
+/* ═══ BUTTONS ═══ */
+.buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
+@media(min-width:500px){.buttons{grid-template-columns:repeat(4,1fr);}}
+
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  border:none;padding:13px 16px;border-radius:14px;
+  font-size:14px;font-weight:600;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;
+  cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;
+  position:relative;overflow:hidden;
+}
+.btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background 0.2s;}
+.btn:hover::before{background:rgba(255,255,255,0.08);}
+.btn:hover{transform:translateY(-2px);}
+.btn:active{transform:translateY(0);}
+
+.btn-mic{background:linear-gradient(135deg,#c0006a,#ff0080);color:white;box-shadow:0 4px 20px rgba(255,0,128,0.25);}
+.btn-mic.recording{animation:recPulse 1s infinite;}
+@keyframes recPulse{0%,100%{box-shadow:0 4px 20px rgba(255,0,128,0.3);}50%{box-shadow:0 4px 40px rgba(255,0,128,0.7);}}
+
+.btn-ask{background:linear-gradient(135deg,#0050cc,#00d4ff);color:white;box-shadow:0 4px 20px rgba(0,212,255,0.25);}
+.btn-speak{background:linear-gradient(135deg,#006633,#00ff88);color:white;box-shadow:0 4px 20px rgba(0,255,136,0.2);}
+.btn-clear{background:linear-gradient(135deg,#883300,#ff6600);color:white;box-shadow:0 4px 20px rgba(255,102,0,0.2);}
+.btn-history{background:linear-gradient(135deg,#440088,#aa00ff);color:white;box-shadow:0 4px 20px rgba(170,0,255,0.2);}
+.btn-copy{background:linear-gradient(135deg,#006688,#00cccc);color:white;box-shadow:0 4px 20px rgba(0,204,204,0.2);}
+.btn-export{background:linear-gradient(135deg,#334400,#88aa00);color:white;box-shadow:0 4px 20px rgba(136,170,0,0.2);}
+.btn-stop{background:linear-gradient(135deg,#880000,#ff0033);color:white;box-shadow:0 4px 20px rgba(255,0,51,0.2);}
+
+/* ═══ RESPONSE ═══ */
+.response-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;}
+.response-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);}
+.response-meta{display:flex;align-items:center;gap:10px;}
+.token-count{font-family:'Orbitron',monospace;font-size:10px;color:var(--muted);}
+.response-time{font-family:'Orbitron',monospace;font-size:10px;color:var(--green);}
+
+.response{
+  background:var(--surface2);border:1px solid var(--border);border-radius:16px;
+  padding:20px;min-height:180px;max-height:380px;overflow-y:auto;
+  line-height:1.8;font-size:15px;font-weight:400;color:var(--text);
+  white-space:pre-wrap;word-break:break-word;
+  transition:border-color 0.3s;
+  scrollbar-width:thin;scrollbar-color:var(--cyan) transparent;
+}
+.response::-webkit-scrollbar{width:3px;}
+.response::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px;}
+.response.active{border-color:rgba(0,212,255,0.35);}
+.placeholder{color:#1e3050;font-style:italic;}
+
+/* Thinking animation */
+.thinking-wrap{display:flex;flex-direction:column;gap:12px;}
+.thinking-line{display:flex;align-items:center;gap:10px;color:var(--cyan);font-size:14px;}
+.dots span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--cyan);margin:0 2px;animation:dotBounce 1.2s infinite ease-in-out;}
+.dots span:nth-child(2){animation-delay:0.2s;}
+.dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes dotBounce{0%,80%,100%{transform:scale(0.5);opacity:0.3;}40%{transform:scale(1);opacity:1;}}
+.thinking-bar{height:3px;background:rgba(0,212,255,0.15);border-radius:2px;overflow:hidden;}
+.thinking-bar-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));animation:barFill 2s ease-in-out infinite;}
+@keyframes barFill{0%{width:0;margin-left:0;}50%{width:60%;margin-left:20%;}100%{width:0;margin-left:100%;}
+
+/* Error */
+.error-box{background:rgba(255,51,102,0.06);border:1px solid rgba(255,51,102,0.25);border-radius:12px;padding:16px;color:#ffaaaa;font-size:13px;line-height:1.8;}
+.error-box strong{color:var(--danger);}
+.error-box code{background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;font-family:'Orbitron',monospace;font-size:11px;}
+
+/* ═══ STATS ═══ */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px;}
+@media(min-width:500px){.stats{grid-template-columns:repeat(4,1fr);}}
+.stat{
+  background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:16px 12px;text-align:center;
+  transition:border-color 0.3s,transform 0.2s;cursor:default;
+}
+.stat:hover{border-color:rgba(0,212,255,0.25);transform:translateY(-2px);}
+.stat-value{font-family:'Orbitron',monospace;font-size:22px;font-weight:700;color:var(--cyan);display:block;margin-bottom:4px;}
+.stat-label{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+
+/* ═══ HISTORY PANEL ═══ */
+.history-panel{
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;
+  margin-bottom:16px;display:none;
+  animation:fadeUp 0.4s ease both;
+}
+.history-panel.open{display:block;}
+.history-title{font-family:'Orbitron',monospace;font-size:13px;color:var(--cyan);letter-spacing:2px;margin-bottom:14px;}
+.history-list{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--cyan) transparent;}
+.history-item{
+  background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;
+  cursor:pointer;transition:border-color 0.2s,transform 0.2s;
+}
+.history-item:hover{border-color:var(--border-active);transform:translateX(4px);}
+.history-q{font-size:13px;color:var(--text);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.history-meta{font-size:11px;color:var(--muted);display:flex;gap:12px;}
+.history-empty{color:var(--muted);font-size:13px;text-align:center;padding:20px;}
+
+/* ═══ ENERGY CALCULATOR ═══ */
+.calc-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;
+  margin-bottom:16px;animation:fadeUp 0.6s ease 0.5s both;
+}
+.calc-title{font-family:'Orbitron',monospace;font-size:13px;color:var(--cyan);letter-spacing:2px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px;}
+.calc-field{display:flex;flex-direction:column;gap:5px;}
+.calc-field label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.calc-field input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:10px;font-family:'Exo 2',sans-serif;font-size:14px;transition:border-color 0.2s;}
+.calc-field input:focus{outline:none;border-color:var(--border-active);}
+.calc-result{
+  background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.2);
+  border-radius:12px;padding:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;
+}
+.calc-res-item{text-align:center;}
+.calc-res-value{font-family:'Orbitron',monospace;font-size:18px;color:var(--green);display:block;}
+.calc-res-label{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.calc-btn{
+  width:100%;background:linear-gradient(135deg,#003322,#00ff88);color:white;border:none;
+  padding:11px;border-radius:12px;font-family:'Exo 2',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;transition:transform 0.2s,opacity 0.2s;margin-bottom:10px;
+}
+.calc-btn:hover{transform:translateY(-2px);}
+
+/* ═══ FOOTER ═══ */
+.footer{text-align:center;padding:20px 0;color:#1e3050;font-size:12px;letter-spacing:2px;text-transform:uppercase;}
+
+/* Phone friendly */
+@media(max-width:480px){
+  .header h1{font-size:22px;letter-spacing:1px;}
+  .config-row{flex-direction:column;}
+  .model-tag{align-self:flex-start;}
+}
+
+/* Toast notification */
+.toast{
+  position:fixed;bottom:30px;right:20px;z-index:9999;
+  background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);
+  color:var(--cyan);padding:12px 20px;border-radius:12px;font-size:13px;
+  transform:translateY(80px);opacity:0;transition:all 0.3s;pointer-events:none;
+  backdrop-filter:blur(10px);
+}
+.toast.show{transform:translateY(0);opacity:1;}
+</style>
 </head>
 <body>
 
-<div class="container">
-  <!-- ... (rest of the HTML remains the same) -->
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="toast" id="toast"></div>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-eyebrow">
+      <div class="eyebrow-dot"></div>
+      OFFLINE AI · PRIVATE · SECURE
+    </div>
+    <h1>⚡ AI ENERGY ADVISOR</h1>
+    <div class="header-sub">Smart Energy Intelligence · Voice + Text · Multilingual</div>
+    <div class="power-meter">
+      <div class="power-bar"></div><div class="power-bar"></div><div class="power-bar"></div>
+      <div class="power-bar"></div><div class="power-bar"></div><div class="power-bar"></div>
+      <div class="power-bar"></div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div class="status-left">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Connecting to Ollama...</span>
+    </div>
+    <div class="ip-display" id="ipDisplay">localhost:11434</div>
+  </div>
+
+  <!-- ENERGY TIPS TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker-inner" id="ticker"></div>
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="card">
+
+    <!-- CONFIG ROW -->
+    <div class="config-row">
+      <div class="field-group">
+        <div class="field-label">Language</div>
+        <div class="select-wrap">
+          <select id="language">
+            <option value="en-US">🇺🇸 English</option>
+            <option value="te-IN">🇮🇳 Telugu</option>
+            <option value="hi-IN">🇮🇳 Hindi</option>
+            <option value="kn-IN">🇮🇳 Kannada</option>
+            <option value="mr-IN">🇮🇳 Marathi</option>
+            <option value="ta-IN">🇮🇳 Tamil</option>
+            <option value="fr-FR">🇫🇷 French</option>
+            <option value="de-DE">🇩🇪 German</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Response Style</div>
+        <div class="select-wrap">
+          <select id="style">
+            <option value="practical">⚡ Practical & Short</option>
+            <option value="detailed">📋 Detailed Explanation</option>
+            <option value="simple">🧒 Simple (for beginners)</option>
+            <option value="technical">🔧 Technical Expert</option>
+            <option value="savings">💰 Cost Savings Focus</option>
+          </select>
+        </div>
+      </div>
+      <div class="model-tag">llama3.2</div>
+    </div>
+
+    <!-- QUICK QUESTIONS -->
+    <div class="quick-label">⚡ Quick Questions</div>
+    <div class="quick-btns" id="quickBtns"></div>
+
+    <!-- INPUT -->
+    <div class="input-section">
+      <div class="input-label">
+        Your Question
+        <span class="char-count" id="charCount">0 chars</span>
+      </div>
+      <textarea id="prompt" placeholder="Ask about electricity bills, solar panels, power consumption, energy saving, home automation, overload protection..."></textarea>
+    </div>
+
+    <!-- MAIN BUTTONS -->
+    <div class="buttons">
+      <button class="btn btn-mic" id="micBtn" onclick="startListening()">🎤 Voice</button>
+      <button class="btn btn-ask" id="askBtn" onclick="askAI()">🚀 Ask AI</button>
+      <button class="btn btn-speak" onclick="speakReply()">🔊 Speak</button>
+      <button class="btn btn-clear" onclick="clearAll()">🗑 Clear</button>
+    </div>
+
+    <!-- RESPONSE -->
+    <div class="response-header">
+      <div class="response-label">AI Response</div>
+      <div class="response-meta">
+        <span class="response-time" id="responseTime"></span>
+        <span class="token-count" id="tokenCount"></span>
+      </div>
+    </div>
+    <div class="response" id="response">
+      <span class="placeholder">⚡ Your AI energy advisor is ready. Ask anything about energy, electricity, solar, or smart homes...</span>
+    </div>
+
+    <!-- SECONDARY BUTTONS -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+      <button class="btn btn-copy" style="flex:1;min-width:100px;font-size:12px;padding:9px;" onclick="copyReply()">📋 Copy</button>
+      <button class="btn btn-history" style="flex:1;min-width:100px;font-size:12px;padding:9px;" onclick="toggleHistory()">🕐 History</button>
+      <button class="btn btn-export" style="flex:1;min-width:100px;font-size:12px;padding:9px;" onclick="exportChat()">💾 Export</button>
+      <button class="btn btn-stop" style="flex:1;min-width:100px;font-size:12px;padding:9px;" onclick="stopSpeech()">⏹ Stop</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat"><span class="stat-value" id="qCount">0</span><span class="stat-label">Asked</span></div>
+      <div class="stat"><span class="stat-value" id="vCount">0</span><span class="stat-label">Voice</span></div>
+      <div class="stat"><span class="stat-value" id="avgTime">—</span><span class="stat-label">Avg Speed</span></div>
+      <div class="stat"><span class="stat-value">🔒</span><span class="stat-label">Offline</span></div>
+    </div>
+
+  </div>
+
+  <!-- HISTORY PANEL -->
+  <div class="history-panel" id="historyPanel">
+    <div class="history-title">📜 CONVERSATION HISTORY</div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+
+  <!-- ENERGY CALCULATOR -->
+  <div class="calc-card">
+    <div class="calc-title">🔌 <span>ENERGY COST CALCULATOR</span></div>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Appliance (Watts)</label>
+        <input type="number" id="cWatts" placeholder="e.g. 1500" min="0">
+      </div>
+      <div class="calc-field">
+        <label>Hours / Day</label>
+        <input type="number" id="cHours" placeholder="e.g. 8" min="0" max="24">
+      </div>
+      <div class="calc-field">
+        <label>Days / Month</label>
+        <input type="number" id="cDays" placeholder="e.g. 30" min="1" max="31">
+      </div>
+      <div class="calc-field">
+        <label>Rate (₹/kWh)</label>
+        <input type="number" id="cRate" placeholder="e.g. 6.5" step="0.1" min="0">
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcEnergy()">⚡ CALCULATE ENERGY COST</button>
+    <div class="calc-result" id="calcResult" style="display:none;">
+      <div class="calc-res-item"><span class="calc-res-value" id="calcKwh">—</span><span class="calc-res-label">kWh/Month</span></div>
+      <div class="calc-res-item"><span class="calc-res-value" id="calcCost">—</span><span class="calc-res-label">Cost/Month</span></div>
+      <div class="calc-res-item"><span class="calc-res-value" id="calcYear">—</span><span class="calc-res-label">Cost/Year</span></div>
+      <div class="calc-res-item"><span class="calc-res-value" id="calcCo2">—</span><span class="calc-res-label">kg CO₂/Month</span></div>
+    </div>
+  </div>
+
+  <div class="footer">⚡ Ollama · llama3.2 · 100% Private · No cloud · No data sent</div>
 </div>
 
 <script>
-  const recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let qCount = 0, vCount = 0, totalTime = 0;
+let currentReply = '';
+let chatHistory = [];
+let speaking = false;
+let recognition = null;
+let abortCtrl = null;
 
+// ═══════════════════════════════════════════
+// STARS BACKGROUND
+// ═══════════════════════════════════════════
+(function createStars(){
+  const c = document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random()*2+0.5;
+    s.style.cssText = `
+      width:${size}px;height:${size}px;
+      top:${Math.random()*100}%;left:${Math.random()*100}%;
+      --d:${2+Math.random()*4}s;
+      animation-delay:${Math.random()*5}s;
+    `;
+    c.appendChild(s);
+  }
+})();
+
+// ═══════════════════════════════════════════
+// TICKER TIPS
+// ═══════════════════════════════════════════
+const tips = [
+  ['⚡','LEDs use 75% less energy than incandescent bulbs'],
+  ['☀️','Solar panels can reduce electricity bills by up to 90%'],
+  ['🌡️','Every 1°C higher on AC increases energy use by 6-8%'],
+  ['🔌','Standby power accounts for 10% of home electricity'],
+  ['💡','Smart power strips eliminate phantom energy drain'],
+  ['🏠','Proper insulation saves 20-30% on heating/cooling costs'],
+  ['⚡','A 5-star AC uses 30% less power than a 1-star model'],
+  ['🌊','Front-load washers use 50% less water and energy'],
+  ['🔋','Off-peak charging (night) costs less in most states'],
+  ['☀️','India gets 300+ sunny days/year — ideal for solar'],
+];
+(function buildTicker(){
+  const inner = document.getElementById('ticker');
+  const doubled = [...tips, ...tips];
+  inner.innerHTML = doubled.map(([icon, text]) =>
+    `<span class="ticker-item">${icon} <span>${text}</span></span>`
+  ).join('');
+})();
+
+// ═══════════════════════════════════════════
+// QUICK QUESTIONS
+// ═══════════════════════════════════════════
+const quickQs = [
+  'How to reduce my electricity bill?',
+  'What size solar panel for my home?',
+  'Why is my AC bill so high?',
+  'Best energy saving appliances?',
+  'How does a smart meter work?',
+  'What causes power overload?',
+  'EV charging at home setup?',
+  'Calculate my monthly bill',
+];
+(function buildQuick(){
+  const c = document.getElementById('quickBtns');
+  quickQs.forEach(q => {
+    const b = document.createElement('button');
+    b.className = 'quick-btn';
+    b.textContent = q;
+    b.onclick = () => {
+      document.getElementById('prompt').value = q;
+      updateCharCount();
+      askAI();
+    };
+    c.appendChild(b);
+  });
+})();
+
+// ═══════════════════════════════════════════
+// CHAR COUNT
+// ═══════════════════════════════════════════
+document.getElementById('prompt').addEventListener('input', updateCharCount);
+function updateCharCount(){
+  const len = document.getElementById('prompt').value.length;
+  document.getElementById('charCount').textContent = len + ' chars';
+}
+
+// ═══════════════════════════════════════════
+// SPEECH RECOGNITION
+// ═══════════════════════════════════════════
+try {
+  recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
   recognition.continuous = false;
   recognition.interimResults = false;
+} catch(e){}
 
-  function startListening() {
-    // ... (rest of the code remains the same)
-  }
-
-  async function sendPrompt() {
-    // ... (rest of the code remains the same)
-  }
-
-  recognition.onresult = function(event) {
-    const transcript = event.results[0][0].transcript;
-    document.getElementById('prompt').value = transcript;
-
-    setTimeout(() => {
-      document.getElementById('responseBox').innerHTML = 'Ollama: ' + transcript;
-      speakResponse(transcript);
-    }, 500); // wait for 500ms to allow the response to be generated
+function startListening(){
+  if(!recognition){ showToast('Use Chrome for voice input'); return; }
+  const micBtn = document.getElementById('micBtn');
+  recognition.lang = document.getElementById('language').value;
+  recognition.start();
+  micBtn.classList.add('recording');
+  micBtn.textContent = '🔴 Listening...';
+  recognition.onresult = e => {
+    document.getElementById('prompt').value = e.results[0][0].transcript;
+    updateCharCount();
+    vCount++;
+    document.getElementById('vCount').textContent = vCount;
+    micBtn.classList.remove('recording');
+    micBtn.textContent = '🎤 Voice';
   };
-
-  recognition.onerror = function(event) {
-    alert('Mic Error: ' + event.error);
+  recognition.onerror = e => {
+    micBtn.classList.remove('recording');
+    micBtn.textContent = '🎤 Voice';
+    if(e.error !== 'no-speech') showToast('Mic error: ' + e.error);
   };
+  recognition.onend = () => {
+    micBtn.classList.remove('recording');
+    micBtn.textContent = '🎤 Voice';
+  };
+}
 
-  function speakResponse(text) {
-    const lang = document.getElementById('languageSelect').value;
+// ═══════════════════════════════════════════
+// ASK AI
+// ═══════════════════════════════════════════
+const stylePrompts = {
+  practical: 'Give a practical, concise answer in 3-5 bullet points.',
+  detailed: 'Give a detailed, thorough explanation with examples.',
+  simple: 'Explain simply as if to a complete beginner. Use easy words.',
+  technical: 'Give a technical expert-level answer with specifics.',
+  savings: 'Focus on cost savings, money amounts, and ROI calculations.'
+};
 
-    const speech = new SpeechSynthesisUtterance(text);
-    speech.lang = lang;
+const langNames = {'te-IN':'Telugu','hi-IN':'Hindi','kn-IN':'Kannada','mr-IN':'Marathi','ta-IN':'Tamil','fr-FR':'French','de-DE':'German','en-US':'English'};
 
-    window.speechSynthesis.speak(speech);
+async function askAI(){
+  const promptText = document.getElementById('prompt').value.trim();
+  const responseBox = document.getElementById('response');
+  if(!promptText){ showToast('Please enter a question'); return; }
+
+  const lang = document.getElementById('language').value;
+  const style = document.getElementById('style').value;
+  const langName = langNames[lang] || 'English';
+  const styleInstr = stylePrompts[style] || stylePrompts.practical;
+
+  responseBox.classList.add('active');
+  responseBox.innerHTML = `
+    <div class="thinking-wrap">
+      <div class="thinking-line">⚡ AI is processing your query <div class="dots"><span></span><span></span><span></span></div></div>
+      <div class="thinking-bar"><div class="thinking-bar-fill"></div></div>
+    </div>`;
+
+  document.getElementById('responseTime').textContent = '';
+  document.getElementById('tokenCount').textContent = '';
+
+  const t0 = Date.now();
+
+  const systemPrompt = `You are an expert AI Energy Advisor with deep knowledge of:
+- Electricity bills and tariffs (especially Indian electricity tariffs)
+- Solar panel systems and sizing
+- Home appliance power consumption
+- Energy saving strategies and ROI
+- Smart home energy management
+- Electrical safety and overload protection
+- Battery storage systems
+- EV charging at home
+- Government energy subsidies (especially Indian schemes like PM Surya Ghar)
+
+${styleInstr}
+Reply in ${langName} language.
+
+User question: ${promptText}`;
+
+  try {
+    const response = await fetch('http://localhost:11434/api/generate', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({model:'llama3.2', prompt: systemPrompt, stream:false})
+    });
+
+    if(!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+    const elapsed = ((Date.now()-t0)/1000).toFixed(1);
+    currentReply = data.response || 'No response.';
+
+    responseBox.classList.remove('active');
+    responseBox.innerText = currentReply;
+
+    // Stats
+    qCount++;
+    totalTime += parseFloat(elapsed);
+    document.getElementById('qCount').textContent = qCount;
+    document.getElementById('responseTime').textContent = elapsed + 's';
+    document.getElementById('avgTime').textContent = (totalTime/qCount).toFixed(1)+'s';
+    document.getElementById('tokenCount').textContent = Math.round(currentReply.length/4) + ' tokens';
+    document.getElementById('statusDot').className = 'status-dot';
+    document.getElementById('statusText').textContent = '✅ Ollama connected · llama3.2 · Ready';
+
+    // Add to history
+    chatHistory.unshift({q: promptText, a: currentReply, time: new Date().toLocaleTimeString(), elapsed});
+    if(chatHistory.length > 20) chatHistory.pop();
+
+  } catch(err) {
+    responseBox.classList.remove('active');
+    responseBox.innerHTML = `<div class="error-box">
+      <strong>❌ Cannot connect to Ollama</strong><br><br>
+      Run these in CMD:<br><br>
+      1️⃣ <code>taskkill /F /IM ollama.exe /T</code><br>
+      2️⃣ <code>set OLLAMA_ORIGINS=*</code><br>
+      3️⃣ <code>ollama serve</code><br><br>
+      In a NEW CMD window:<br>
+      4️⃣ <code>ollama run llama3.2</code><br><br>
+      Then reload this page.<br><br>
+      <strong>Error:</strong> ${err.message}
+    </div>`;
+    document.getElementById('statusDot').className = 'status-dot error';
+    document.getElementById('statusText').textContent = '❌ Ollama not reachable';
   }
+}
+
+// Enter key shortcut
+document.getElementById('prompt').addEventListener('keydown', e => {
+  if(e.ctrlKey && e.key === 'Enter') askAI();
+});
+
+// ═══════════════════════════════════════════
+// SPEECH
+// ═══════════════════════════════════════════
+function speakReply(){
+  if(!currentReply){ showToast('Ask a question first!'); return; }
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(currentReply);
+  utt.lang = document.getElementById('language').value;
+  utt.rate = 0.92; utt.pitch = 1; utt.volume = 1;
+  window.speechSynthesis.speak(utt);
+  showToast('🔊 Speaking...');
+}
+
+function stopSpeech(){
+  window.speechSynthesis.cancel();
+  if(recognition) try{ recognition.stop(); }catch(e){}
+  showToast('⏹ Stopped');
+}
+
+// ═══════════════════════════════════════════
+// COPY & EXPORT
+// ═══════════════════════════════════════════
+function copyReply(){
+  if(!currentReply){ showToast('Nothing to copy yet'); return; }
+  navigator.clipboard.writeText(currentReply).then(() => showToast('📋 Copied!')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = currentReply;
+    document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('📋 Copied!');
+  });
+}
+
+function exportChat(){
+  if(!chatHistory.length){ showToast('No history to export'); return; }
+  let txt = '⚡ AI ENERGY ADVISOR — CHAT EXPORT\n';
+  txt += '================================\n\n';
+  chatHistory.forEach((h,i) => {
+    txt += `[${i+1}] ${h.time}\nQ: ${h.q}\nA: ${h.a}\n\n---\n\n`;
+  });
+  const blob = new Blob([txt], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'energy-advisor-chat.txt';
+  a.click();
+  showToast('💾 Exported!');
+}
+
+// ═══════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════
+function toggleHistory(){
+  const panel = document.getElementById('historyPanel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')) renderHistory();
+}
+
+function renderHistory(){
+  const list = document.getElementById('historyList');
+  if(!chatHistory.length){
+    list.innerHTML = '<div class="history-empty">No history yet. Ask a question!</div>';
+    return;
+  }
+  list.innerHTML = chatHistory.map((h,i) => `
+    <div class="history-item" onclick="loadHistory(${i})">
+      <div class="history-q">${h.q}</div>
+      <div class="history-meta"><span>${h.time}</span><span>${h.elapsed}s</span></div>
+    </div>`).join('');
+}
+
+function loadHistory(i){
+  const h = chatHistory[i];
+  document.getElementById('prompt').value = h.q;
+  document.getElementById('response').innerText = h.a;
+  currentReply = h.a;
+  updateCharCount();
+  document.getElementById('historyPanel').classList.remove('open');
+  showToast('📜 Loaded from history');
+}
+
+// ═══════════════════════════════════════════
+// ENERGY CALCULATOR
+// ═══════════════════════════════════════════
+function calcEnergy(){
+  const w = parseFloat(document.getElementById('cWatts').value);
+  const h = parseFloat(document.getElementById('cHours').value);
+  const d = parseFloat(document.getElementById('cDays').value);
+  const r = parseFloat(document.getElementById('cRate').value);
+
+  if(!w||!h||!d||!r){ showToast('Fill all calculator fields'); return; }
+
+  const kwh = (w * h * d) / 1000;
+  const cost = kwh * r;
+  const yearCost = cost * 12;
+  const co2 = kwh * 0.82; // India grid emission factor
+
+  document.getElementById('calcKwh').textContent = kwh.toFixed(2);
+  document.getElementById('calcCost').textContent = '₹' + cost.toFixed(0);
+  document.getElementById('calcYear').textContent = '₹' + yearCost.toFixed(0);
+  document.getElementById('calcCo2').textContent = co2.toFixed(1);
+  document.getElementById('calcResult').style.display = 'grid';
+  showToast('⚡ Calculated!');
+}
+
+// ═══════════════════════════════════════════
+// CLEAR
+// ═══════════════════════════════════════════
+function clearAll(){
+  document.getElementById('prompt').value = '';
+  document.getElementById('response').innerHTML = '<span class="placeholder">⚡ Cleared. Ready for your next question...</span>';
+  document.getElementById('response').classList.remove('active');
+  document.getElementById('responseTime').textContent = '';
+  document.getElementById('tokenCount').textContent = '';
+  currentReply = '';
+  updateCharCount();
+  window.speechSynthesis.cancel();
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════
+// OLLAMA HEALTH CHECK
+// ═══════════════════════════════════════════
+async function checkOllama(){
+  try {
+    const r = await fetch('http://localhost:11434/api/tags');
+    if(r.ok){
+      document.getElementById('statusDot').className = 'status-dot';
+      document.getElementById('statusText').textContent = '✅ Ollama ready · llama3.2 loaded · Ask anything!';
+    }
+  } catch(e){
+    document.getElementById('statusDot').className = 'status-dot error';
+    document.getElementById('statusText').textContent = '⚠️ Start Ollama: set OLLAMA_ORIGINS=* && ollama serve';
+  }
+}
+checkOllama();
+setInterval(checkOllama, 15000);
 </script>
-
 </body>
 </html>
